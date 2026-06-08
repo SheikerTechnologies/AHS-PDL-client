@@ -34,9 +34,9 @@ export default function Navbar({
   const navItems: { label: string; tab: ActiveTab }[] = [
     { label: 'Home', tab: 'Home' },
     { label: 'Projects', tab: 'Projects' },
-    { label: 'About', tab: 'About' },
     { label: 'Layout', tab: 'Layout' },          
     { label: 'Contents', tab: 'Contents' },
+    { label: 'About', tab: 'About' },
     { label: 'Contact', tab: 'Contact' },
   ];
 
