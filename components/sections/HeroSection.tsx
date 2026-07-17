@@ -12,7 +12,7 @@ import { useRef } from "react";
 
 interface HeroSectionProps {
   onViewProperties: () => void;
-  onEnquireNow: () => void;
+  onEnquireNow?: () => void;
 }
 
 export default function HeroSection({ onViewProperties, onEnquireNow }: HeroSectionProps) {
@@ -104,13 +104,15 @@ export default function HeroSection({ onViewProperties, onEnquireNow }: HeroSect
               <span>View Properties</span>
               <ArrowRight className="w-4 h-4" />
             </button>
-            <button
-              onClick={onEnquireNow}
-              className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-bold px-7 py-3.5 rounded-full transition-all duration-200 active:scale-95 cursor-pointer"
-            >
-              <MessageCircle className="w-4 h-4" />
-              <span>Enquire Now</span>
-            </button>
+            {onEnquireNow && (
+              <button
+                onClick={onEnquireNow}
+                className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 backdrop-blur-sm border border-white/30 text-white text-sm font-bold px-7 py-3.5 rounded-full transition-all duration-200 active:scale-95 cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Enquire Now</span>
+              </button>
+            )}
           </motion.div>
         </div>
 

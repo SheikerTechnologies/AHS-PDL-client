@@ -8,7 +8,7 @@
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Heart, Camera, ArrowUpRight } from 'lucide-react';
+import { Heart, Camera, Eye } from 'lucide-react';
 import { DevelopmentProject } from '@/lib/types';
 import { titleToSlug } from '@/lib/slugs';
 
@@ -109,17 +109,10 @@ export default function ProjectCard({ project, isSaved, onToggleSave, onInquire,
           </p>
 
           {onInquire && (
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onInquire(project);
-              }}
-              className="mt-2 w-full flex items-center justify-center gap-1 bg-accent text-text-on-accent hover:bg-accent-hover text-xs font-bold py-2 px-3 rounded-xl transition-all duration-200 cursor-pointer"
-            >
-              Enquire
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </button>
+            <span className="mt-2 w-full flex items-center justify-center gap-1 bg-accent text-text-on-accent text-xs font-bold py-2 px-3 rounded-xl">
+              View details
+              <Eye className="w-3.5 h-3.5" />
+            </span>
           )}
         </div>
       </Link>

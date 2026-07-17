@@ -5,12 +5,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useMemo } from "react";
-import { Search } from "lucide-react";
+import { useState } from "react";
 import { motion } from "motion/react";
-import type { BlogCategory, BlogPostFrontmatter } from "@/lib/blog-types";
-import BlogHeader from "@/components/blog/BlogHeader";
-import CategoryFilter from "@/components/blog/CategoryFilter";
+import type { BlogPostFrontmatter } from "@/lib/blog-types";
 import FeaturedArticleCard from "@/components/blog/FeaturedArticleCard";
 import ArticleCard from "@/components/blog/ArticleCard";
 
@@ -21,45 +18,12 @@ interface BlogListingClientProps {
 }
 
 export default function BlogListingClient({ posts }: BlogListingClientProps) {
-  const [activeCategory, setActiveCategory] = useState<BlogCategory | "All">(
-    "All"
-  );
-  const [searchQuery, setSearchQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
 
-  const filteredPosts = useMemo(() => {
-    let filtered = posts;
-
-    // Category filter
-    if (activeCategory !== "All") {
-      filtered = filtered.filter((p) => p.category === activeCategory);
-    }
-
-    // Search filter (client-side, by title)
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      filtered = filtered.filter((p) =>
-        p.title.toLowerCase().includes(q)
-      );
-    }
-
-    return filtered;
-  }, [posts, activeCategory, searchQuery]);
-
-  const featuredPost = filteredPosts.length > 0 ? filteredPosts[0] : null;
-  const remainingPosts = filteredPosts.length > 1 ? filteredPosts.slice(1) : [];
+  const featuredPost = posts.length > 0 ? posts[0] : null;
+  const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
   const visiblePosts = remainingPosts.slice(0, visibleCount);
   const hasMore = visibleCount < remainingPosts.length;
-
-  const handleCategoryChange = (cat: BlogCategory | "All") => {
-    setActiveCategory(cat);
-    setVisibleCount(POSTS_PER_PAGE);
-  };
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchQuery(e.target.value);
-    setVisibleCount(POSTS_PER_PAGE);
-  };
 
   const loadMore = () => {
     setVisibleCount((prev) => prev + POSTS_PER_PAGE);
@@ -72,31 +36,18 @@ export default function BlogListingClient({ posts }: BlogListingClientProps) {
 
       <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-10">
         {/* Header */}
-        <BlogHeader />
-
-        {/* Search & Filters */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-          {/* Category Filters */}
-          <CategoryFilter
-            activeCategory={activeCategory}
-            onCategoryChange={handleCategoryChange}
-          />
-
-          {/* Search Input */}
-          <div className="relative w-full sm:w-64">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
-            <input
-              type="text"
-              placeholder="Search articles..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-              className="w-full pl-9 pr-4 py-2.5 rounded-full bg-surface-muted border border-border-light text-sm text-text-main placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-accent/20 focus:border-accent transition-all"
-            />
-          </div>
+        <div className="text-center mb-16">
+          <h1 className="text-5xl md:text-6xl font-bold text-text-main tracking-tighter">
+            Insights &amp; Updates
+          </h1>
+          <p className="mt-4 text-lg text-text-secondary max-w-2xl mx-auto">
+            Expert perspectives on Bangladesh&apos;s real estate market, property investment
+            guides, company news, and community events from the AHS Properties team.
+          </p>
         </div>
 
         {/* Featured Article */}
-        {featuredPost && !searchQuery && activeCategory === "All" && (
+        {featuredPost && (
           <div className="mb-12">
             <FeaturedArticleCard post={featuredPost} />
           </div>
@@ -131,17 +82,8 @@ export default function BlogListingClient({ posts }: BlogListingClientProps) {
         ) : (
           <div className="text-center py-20">
             <p className="text-text-muted text-lg">
-              No articles found{searchQuery ? ` for "${searchQuery}"` : ""}.
+              No articles found.
             </p>
-            <button
-              onClick={() => {
-                setSearchQuery("");
-                setActiveCategory("All");
-              }}
-              className="mt-4 text-accent font-semibold hover:underline cursor-pointer"
-            >
-              Clear filters
-            </button>
           </div>
         )}
       </div>

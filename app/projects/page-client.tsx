@@ -8,7 +8,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { DEVELOPMENT_PROJECTS } from '@/lib/data';
-import { PropertyType, ProjectStatus, SortOption } from '@/lib/types';
+import { ProjectStatus } from '@/lib/types';
 import ProjectCard from '@/components/ProjectCard';
 import ProjectFilters from '@/components/ProjectFilters';
 import ProjectMapView from '@/components/ProjectMapView';
@@ -22,9 +22,6 @@ export default function ProjectsRouteClient() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatuses, setSelectedStatuses] = useState<ProjectStatus[]>([]);
   const [selectedArea, setSelectedArea] = useState('All');
-  const [selectedTypes, setSelectedTypes] = useState<PropertyType[]>([]);
-  const [sizeRange, setSizeRange] = useState<{ min: number; max: number }>({ min: 0, max: Infinity });
-  const [sortOption, setSortOption] = useState<SortOption>('newest');
   const [showMap, setShowMap] = useState(false);
 
   // Pagination
@@ -55,7 +52,7 @@ export default function ProjectsRouteClient() {
     persistSaved(next);
   };
 
-  // Derived filter/sort logic
+  // Derived filter logic
   const filteredProjects = useMemo(() => {
     let result = DEVELOPMENT_PROJECTS.filter((project) => {
       const matchesSearch =
@@ -69,36 +66,11 @@ export default function ProjectsRouteClient() {
 
       const matchesArea = selectedArea === 'All' || project.area === selectedArea;
 
-      const matchesType =
-        selectedTypes.length === 0 || selectedTypes.includes(project.type);
-
-      // Size range filter
-      const matchesSize =
-        sizeRange.min === 0 && sizeRange.max === Infinity
-          ? true
-          : project.sqftRange
-          ? project.sqftRange.max >= sizeRange.min && project.sqftRange.min <= sizeRange.max
-          : true;
-
-      return matchesSearch && matchesStatus && matchesArea && matchesType && matchesSize;
+      return matchesSearch && matchesStatus && matchesArea;
     });
 
-    // Sort
-    switch (sortOption) {
-      case 'newest':
-        // By id as a proxy for "newest" since we don't have dates
-        result = [...result].reverse();
-        break;
-      case 'most-available':
-        result = [...result].sort((a, b) => b.percentAvailable - a.percentAvailable);
-        break;
-      case 'name-az':
-        result = [...result].sort((a, b) => a.title.localeCompare(b.title));
-        break;
-    }
-
     return result;
-  }, [searchQuery, selectedStatuses, selectedArea, selectedTypes, sortOption]);
+  }, [searchQuery, selectedStatuses, selectedArea]);
 
   // Pagination
   const totalPages = Math.ceil(filteredProjects.length / PROJECTS_PER_PAGE);
@@ -110,17 +82,12 @@ export default function ProjectsRouteClient() {
   const hasActiveFilters =
     searchQuery !== '' ||
     selectedStatuses.length > 0 ||
-    selectedArea !== 'All' ||
-    selectedTypes.length > 0 ||
-    sizeRange.min !== 0 ||
-    sizeRange.max !== Infinity;
+    selectedArea !== 'All';
 
   const handleClearFilters = () => {
     setSearchQuery('');
     setSelectedStatuses([]);
     setSelectedArea('All');
-    setSelectedTypes([]);
-    setSizeRange({ min: 0, max: Infinity });
     setCurrentPage(1);
   };
 
@@ -135,12 +102,6 @@ export default function ProjectsRouteClient() {
           onStatusChange={(s) => { setSelectedStatuses(s); setCurrentPage(1); }}
           selectedArea={selectedArea}
           onAreaChange={(a) => { setSelectedArea(a); setCurrentPage(1); }}
-          selectedTypes={selectedTypes}
-          onTypeChange={(t) => { setSelectedTypes(t); setCurrentPage(1); }}
-          sizeRange={sizeRange}
-          onSizeRangeChange={(r) => { setSizeRange(r); setCurrentPage(1); }}
-          sortOption={sortOption}
-          onSortChange={(s) => { setSortOption(s); setCurrentPage(1); }}
           showMap={showMap}
           onToggleMap={() => setShowMap(!showMap)}
           onClearFilters={handleClearFilters}

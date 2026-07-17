@@ -15,7 +15,7 @@ import {
   ChevronDown,
   X,
 } from 'lucide-react';
-import { PropertyType, ProjectStatus, SortOption } from '@/lib/types';
+import { ProjectStatus } from '@/lib/types';
 
 const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
   { value: 'ONGOING', label: 'Ongoing' },
@@ -24,33 +24,9 @@ const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
 
 const LOCATION_OPTIONS = ['All', 'Jolshiri Abashon', 'Nayapaltan'];
 
-const PROPERTY_TYPES: { value: PropertyType | 'All'; label: string }[] = [
-  { value: 'All', label: 'All Types' },
-  { value: 'Apartment', label: 'Apartment' },
-  { value: 'Townhouse', label: 'Townhouse' },
-  { value: 'Villa', label: 'Villa' },
-];
-
-const SORT_OPTIONS: { value: SortOption; label: string }[] = [
-  { value: 'newest', label: 'Newest' },
-  { value: 'most-available', label: 'Most Available' },
-  { value: 'name-az', label: 'Name A-Z' },
-];
-
-const SIZE_RANGES: { label: string; min: number; max: number }[] = [
-  { label: 'Any Size', min: 0, max: Infinity },
-  { label: 'Under 1,200 sqft', min: 0, max: 1200 },
-  { label: '1,200 - 1,800 sqft', min: 1200, max: 1800 },
-  { label: '1,800 - 2,500 sqft', min: 1800, max: 2500 },
-  { label: 'Over 2,500 sqft', min: 2500, max: Infinity },
-];
-
 interface DropdownState {
   status: boolean;
   location: boolean;
-  type: boolean;
-  sort: boolean;
-  size: boolean;
 }
 
 interface ProjectFiltersProps {
@@ -60,12 +36,6 @@ interface ProjectFiltersProps {
   onStatusChange: (statuses: ProjectStatus[]) => void;
   selectedArea: string;
   onAreaChange: (area: string) => void;
-  selectedTypes: PropertyType[];
-  onTypeChange: (types: PropertyType[]) => void;
-  sizeRange: { min: number; max: number };
-  onSizeRangeChange: (range: { min: number; max: number }) => void;
-  sortOption: SortOption;
-  onSortChange: (sort: SortOption) => void;
   showMap: boolean;
   onToggleMap: () => void;
   onClearFilters: () => void;
@@ -80,12 +50,6 @@ export default function ProjectFilters({
   onStatusChange,
   selectedArea,
   onAreaChange,
-  selectedTypes,
-  onTypeChange,
-  sizeRange,
-  onSizeRangeChange,
-  sortOption,
-  onSortChange,
   showMap,
   onToggleMap,
   onClearFilters,
@@ -118,18 +82,6 @@ export default function ProjectFilters({
       onStatusChange([...selectedStatuses, status]);
     }
   };
-
-  const toggleType = (type: PropertyType) => {
-    if (selectedTypes.includes(type)) {
-      onTypeChange(selectedTypes.filter((t) => t !== type));
-    } else {
-      onTypeChange([...selectedTypes, type]);
-    }
-  };
-
-  const selectedSizeLabel = SIZE_RANGES.find(
-    (r) => r.min === sizeRange.min && r.max === sizeRange.max
-  )?.label || 'Size';
 
   const FilterDropdowns = () => (
     <div className="flex flex-wrap items-center gap-3">
@@ -219,111 +171,6 @@ export default function ProjectFilters({
         )}
       </div>
 
-      {/* Property Type multi-select */}
-      <div className="relative">
-        <button
-          onClick={() => toggleDropdown('type')}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border-main bg-surface-alt text-xs font-medium text-text-main hover:border-text-muted transition-colors cursor-pointer"
-        >
-          <span>
-            {selectedTypes.length === 0
-              ? 'Type'
-              : selectedTypes.length === 1
-              ? selectedTypes[0]
-              : `${selectedTypes.length} selected`}
-          </span>
-          <ChevronDown className={`w-3 h-3 text-text-muted transition-transform ${openDropdown === 'type' ? 'rotate-180' : ''}`} />
-        </button>
-        {openDropdown === 'type' && (
-          <div className="absolute top-full left-0 mt-1 z-30 min-w-[170px] bg-surface-alt border border-border-main rounded-xl shadow-lg p-2">
-            {PROPERTY_TYPES.filter((t) => t.value !== 'All').map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => toggleType(opt.value as PropertyType)}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  selectedTypes.includes(opt.value as PropertyType)
-                    ? 'bg-accent/10 text-accent'
-                    : 'text-text-secondary hover:bg-surface-muted'
-                }`}
-              >
-                <div
-                  className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
-                    selectedTypes.includes(opt.value as PropertyType)
-                      ? 'border-accent bg-accent'
-                      : 'border-border-main'
-                  }`}
-                >
-                  {selectedTypes.includes(opt.value as PropertyType) && (
-                    <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </div>
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Size range dropdown */}
-      <div className="relative">
-        <button
-          onClick={() => toggleDropdown('size')}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border-main bg-surface-alt text-xs font-medium text-text-main hover:border-text-muted transition-colors cursor-pointer"
-        >
-          <span>{selectedSizeLabel}</span>
-          <ChevronDown className={`w-3 h-3 text-text-muted transition-transform ${openDropdown === 'size' ? 'rotate-180' : ''}`} />
-        </button>
-        {openDropdown === 'size' && (
-          <div className="absolute top-full left-0 mt-1 z-30 min-w-[170px] bg-surface-alt border border-border-main rounded-xl shadow-lg p-2">
-            {SIZE_RANGES.map((range) => (
-              <button
-                key={range.label}
-                onClick={() => {
-                  onSizeRangeChange({ min: range.min, max: range.max });
-                  toggleDropdown('size');
-                }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  sizeRange.min === range.min && sizeRange.max === range.max
-                    ? 'bg-accent/10 text-accent'
-                    : 'text-text-secondary hover:bg-surface-muted'
-                }`}
-              >
-                {range.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Sort dropdown */}
-      <div className="relative">
-        <button
-          onClick={() => toggleDropdown('sort')}
-          className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border-main bg-surface-alt text-xs font-medium text-text-main hover:border-text-muted transition-colors cursor-pointer"
-        >
-          <span>Sort: {SORT_OPTIONS.find((s) => s.value === sortOption)?.label}</span>
-          <ChevronDown className={`w-3 h-3 text-text-muted transition-transform ${openDropdown === 'sort' ? 'rotate-180' : ''}`} />
-        </button>
-        {openDropdown === 'sort' && (
-          <div className="absolute top-full left-0 mt-1 z-30 min-w-[150px] bg-surface-alt border border-border-main rounded-xl shadow-lg p-2">
-            {SORT_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => { onSortChange(opt.value); toggleDropdown('sort'); }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  sortOption === opt.value
-                    ? 'bg-accent/10 text-accent'
-                    : 'text-text-secondary hover:bg-surface-muted'
-                }`}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
     </div>
   );
 

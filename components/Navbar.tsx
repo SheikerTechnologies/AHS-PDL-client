@@ -50,6 +50,11 @@ const PHONE_SALES = AGENTS[0].phone; // "01625-555700"
 const WHATSAPP_DIGITS = AGENTS[1].phone.replace(/[^0-9]/g, ''); // "01725555700" → used with country code
 const WHATSAPP_FULL = `880${WHATSAPP_DIGITS}`; // "8801725555700"
 
+/** Scroll window to top instantly on nav clicks */
+function scrollToTop() {
+  window.scrollTo({ top: 0, behavior: 'instant' });
+}
+
 /* ─── Subcomponents ─────────────────────────────────────────────── */
 
 function DesktopNavLink({
@@ -66,6 +71,7 @@ function DesktopNavLink({
   return (
     <Link
       href={href}
+      onClick={scrollToTop}
       className={`relative px-4 py-2 text-sm font-semibold transition-colors duration-200 whitespace-nowrap ${
         isActive
           ? 'text-accent'
@@ -181,7 +187,7 @@ function DesktopMoreDropdown({
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setOpen(false)}
+                onClick={() => { setOpen(false); scrollToTop(); }}
                 className="block px-4 py-3 text-sm font-semibold text-text-main hover:text-accent hover:bg-accent/5 transition-colors duration-150 border-b border-border-main/50 last:border-b-0"
               >
                 {item.label}
@@ -287,6 +293,7 @@ export default function Navbar() {
           {/* ---- Left: Logo (links to homepage) ---- */}
           <Link
             href="/"
+            onClick={scrollToTop}
             className="flex items-center gap-0 select-none shrink-0"
             aria-label="AHS Properties & Development Ltd. — Home"
           >
@@ -397,7 +404,7 @@ export default function Navbar() {
               <div className="flex items-center justify-between px-5 pt-5 pb-2">
                 <Link
                   href="/"
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}
                   aria-label="AHS Properties & Development Ltd. — Home"
                 >
                   <AHSLogo type="horizontal" iconSize={36} />
@@ -419,7 +426,7 @@ export default function Navbar() {
                     <Link
                       key={item.href}
                       href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
+                      onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}
                       className={`flex items-center py-4 border-b border-border-main/60 text-base font-semibold transition-colors duration-200 ${
                         active
                           ? 'text-accent'
@@ -471,7 +478,7 @@ export default function Navbar() {
                               <Link
                                 key={item.href}
                                 href={item.href}
-                                onClick={() => setMobileMenuOpen(false)}
+                                onClick={() => { setMobileMenuOpen(false); scrollToTop(); }}
                                 className={`flex items-center pl-5 py-3 text-sm font-medium transition-colors duration-200 rounded-lg ${
                                   active
                                     ? 'text-accent bg-accent/5'
