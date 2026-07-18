@@ -21,10 +21,6 @@ export const heroContent = {
     en: "Join forces with AHS Properties to develop your land with zero risk, full transparency, and maximum returns.",
     bn: "এএইচএস প্রপার্টিজের সাথে আপনার জমি উন্নয়ন করুন শূন্য ঝুঁকি, সম্পূর্ণ স্বচ্ছতা এবং সর্বোচ্চ রিটার্নে।",
   } as I18nString,
-  cta: {
-    en: "Get a free land evaluation",
-    bn: "বিনামূল্যে জমি মূল্যায়ন করুন",
-  } as I18nString,
 };
 
 // ─── Why Partner ────────────────────────────────────────────────
@@ -281,39 +277,3 @@ export const faqSection = {
   ],
 };
 
-// ─── Lead Form ──────────────────────────────────────────────────
-export const leadFormSection = {
-  heading: {
-    en: "Get Your Free Land Evaluation",
-    bn: "আপনার বিনামূল্যে জমি মূল্যায়ন পান",
-  } as I18nString,
-  subheading: {
-    en: "Fill out the form below and one of our landowner relations experts will get back to you within 24 hours.",
-    bn: "নিচের ফর্মটি পূরণ করুন এবং আমাদের জমির মালিক সম্পর্ক বিশেষজ্ঞদের একজন ২৪ ঘণ্টার মধ্যে আপনার সাথে যোগাযোগ করবেন।",
-  } as I18nString,
-  fullNameLabel: { en: "Full Name", bn: "পূর্ণ নাম" } as I18nString,
-  phoneLabel: { en: "Phone Number", bn: "ফোন নম্বর" } as I18nString,
-  emailLabel: { en: "Email (Optional)", bn: "ইমেইল (ঐচ্ছিক)" } as I18nString,
-  landLocationLabel: { en: "Land Location", bn: "জমির অবস্থান" } as I18nString,
-  landSizeLabel: { en: "Land Size", bn: "জমির পরিমাণ" } as I18nString,
-  roadWidthLabel: { en: "Road Width", bn: "রাস্তার প্রস্থ" } as I18nString,
-  messageLabel: { en: "Additional Message (Optional)", bn: "অতিরিক্ত বার্তা (ঐচ্ছিক)" } as I18nString,
-  submitButton: {
-    en: "Send Land Evaluation Request",
-    bn: "জমি মূল্যায়নের অনুরোধ পাঠান",
-  } as I18nString,
-  submittingButton: {
-    en: "Sending...",
-    bn: "পাঠানো হচ্ছে...",
-  } as I18nString,
-  successMessage: {
-    en: "Thank you! We have received your inquiry and will contact you shortly.",
-    bn: "ধন্যবাদ! আমরা আপনার অনুরোধ পেয়েছি এবং শীঘ্রই আপনার সাথে যোগাযোগ করব।",
-  } as I18nString,
-  errorMessage: {
-    en: "Something went wrong. Please try again or call us directly.",
-    bn: "কিছু সমস্যা হয়েছে। দয়া করে আবার চেষ্টা করুন অথবা সরাসরি আমাদের কল করুন।",
-  } as I18nString,
-  callUs: { en: "Call Us", bn: "আমাদের কল করুন" } as I18nString,
-  whatsApp: { en: "WhatsApp", bn: "হোয়াটসঅ্যাপ" } as I18nString,
-};

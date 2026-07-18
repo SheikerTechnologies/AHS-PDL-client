@@ -9,8 +9,6 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   SlidersHorizontal,
-  Map as MapIcon,
-  Grid3X3,
   Search,
   ChevronDown,
   X,
@@ -36,11 +34,11 @@ interface ProjectFiltersProps {
   onStatusChange: (statuses: ProjectStatus[]) => void;
   selectedArea: string;
   onAreaChange: (area: string) => void;
-  showMap: boolean;
-  onToggleMap: () => void;
   onClearFilters: () => void;
   hasActiveFilters: boolean;
   resultCount: number;
+  statusCounts: Record<ProjectStatus, number>;
+  locationCounts: Record<string, number>;
 }
 
 export default function ProjectFilters({
@@ -50,11 +48,11 @@ export default function ProjectFilters({
   onStatusChange,
   selectedArea,
   onAreaChange,
-  showMap,
-  onToggleMap,
   onClearFilters,
   hasActiveFilters,
   resultCount,
+  statusCounts,
+  locationCounts,
 }: ProjectFiltersProps) {
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<keyof DropdownState | null>(null);
@@ -83,7 +81,14 @@ export default function ProjectFilters({
     }
   };
 
-  const FilterDropdowns = () => (
+  const FilterDropdowns = () => {
+    const statusTriggerCount = selectedStatuses.length === 0
+      ? (statusCounts.ONGOING ?? 0) + (statusCounts.COMPLETED ?? 0)
+      : selectedStatuses.length === 1
+        ? (statusCounts[selectedStatuses[0]] ?? 0)
+        : resultCount;
+
+    return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Status multi-select */}
       <div className="relative">
@@ -100,36 +105,47 @@ export default function ProjectFilters({
                 : 'Completed'
               : `${selectedStatuses.length} selected`}
           </span>
+          <span className="text-[10px] font-semibold text-text-muted bg-surface-muted rounded-md px-1.5 py-0.5 tabular-nums">
+            {statusTriggerCount}
+          </span>
           <ChevronDown className={`w-3 h-3 text-text-muted transition-transform ${openDropdown === 'status' ? 'rotate-180' : ''}`} />
         </button>
         {openDropdown === 'status' && (
           <div className="absolute top-full left-0 mt-1 z-30 min-w-[160px] bg-surface-alt border border-border-main rounded-xl shadow-lg p-2">
-            {STATUS_OPTIONS.map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => toggleStatus(opt.value)}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  selectedStatuses.includes(opt.value)
-                    ? 'bg-accent/10 text-accent'
-                    : 'text-text-secondary hover:bg-surface-muted'
-                }`}
-              >
-                <div
-                  className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors ${
+            {STATUS_OPTIONS.map((opt) => {
+              const count = statusCounts[opt.value] ?? 0;
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => toggleStatus(opt.value)}
+                  className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
                     selectedStatuses.includes(opt.value)
-                      ? 'border-accent bg-accent'
-                      : 'border-border-main'
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-text-secondary hover:bg-surface-muted'
                   }`}
                 >
-                  {selectedStatuses.includes(opt.value) && (
-                    <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  )}
-                </div>
-                {opt.label}
-              </button>
-            ))}
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-colors shrink-0 ${
+                        selectedStatuses.includes(opt.value)
+                          ? 'border-accent bg-accent'
+                          : 'border-border-main'
+                      }`}
+                    >
+                      {selectedStatuses.includes(opt.value) && (
+                        <svg className="w-2.5 h-2.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </div>
+                    {opt.label}
+                  </div>
+                  <span className="text-[10px] font-semibold text-text-muted bg-surface-muted rounded-md px-1.5 py-0.5 tabular-nums">
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
@@ -141,42 +157,54 @@ export default function ProjectFilters({
           className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-border-main bg-surface-alt text-xs font-medium text-text-main hover:border-text-muted transition-colors cursor-pointer"
         >
           <span>{selectedArea}</span>
+          <span className="text-[10px] font-semibold text-text-muted bg-surface-muted rounded-md px-1.5 py-0.5 tabular-nums">
+            {locationCounts[selectedArea] ?? 0}
+          </span>
           <ChevronDown className={`w-3 h-3 text-text-muted transition-transform ${openDropdown === 'location' ? 'rotate-180' : ''}`} />
         </button>
         {openDropdown === 'location' && (
           <div className="absolute top-full left-0 mt-1 z-30 min-w-[180px] bg-surface-alt border border-border-main rounded-xl shadow-lg p-2">
-            {LOCATION_OPTIONS.map((loc) => (
-              <button
-                key={loc}
-                onClick={() => { onAreaChange(loc); toggleDropdown('location'); }}
-                className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
-                  selectedArea === loc
-                    ? 'bg-accent/10 text-accent'
-                    : 'text-text-secondary hover:bg-surface-muted'
-                }`}
-              >
-                <div
-                  className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
-                    selectedArea === loc ? 'border-accent' : 'border-border-main'
+            {LOCATION_OPTIONS.map((loc) => {
+              const count = locationCounts[loc] ?? 0;
+              return (
+                <button
+                  key={loc}
+                  onClick={() => { onAreaChange(loc); toggleDropdown('location'); }}
+                  className={`w-full flex items-center justify-between gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer ${
+                    selectedArea === loc
+                      ? 'bg-accent/10 text-accent'
+                      : 'text-text-secondary hover:bg-surface-muted'
                   }`}
                 >
-                  {selectedArea === loc && (
-                    <div className="w-2 h-2 rounded-full bg-accent" />
-                  )}
-                </div>
-                {loc}
-              </button>
-            ))}
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        selectedArea === loc ? 'border-accent' : 'border-border-main'
+                      }`}
+                    >
+                      {selectedArea === loc && (
+                        <div className="w-2 h-2 rounded-full bg-accent" />
+                      )}
+                    </div>
+                    {loc}
+                  </div>
+                  <span className="text-[10px] font-semibold text-text-muted bg-surface-muted rounded-md px-1.5 py-0.5 tabular-nums">
+                    {count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
         )}
       </div>
 
     </div>
   );
+  };
 
   return (
     <div className="flex flex-col gap-4" ref={dropdownRef}>
-      {/* Header row: title + count + map toggle */}
+      {/* Header row: title + count */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold mt-10 text-text-main tracking-tight">
@@ -195,23 +223,6 @@ export default function ProjectFilters({
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
             Filters
-          </button>
-
-          {/* Map view toggle */}
-          <button
-            onClick={onToggleMap}
-            className={`flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-medium transition-all cursor-pointer ${
-              showMap
-                ? 'bg-accent text-text-on-accent border-accent'
-                : 'bg-surface-alt text-text-main border-border-main hover:bg-surface-muted'
-            }`}
-          >
-            {showMap ? (
-              <Grid3X3 className="w-3.5 h-3.5" />
-            ) : (
-              <MapIcon className="w-3.5 h-3.5" />
-            )}
-            <span className="hidden sm:inline">{showMap ? 'Grid' : 'Map'} View</span>
           </button>
         </div>
       </div>

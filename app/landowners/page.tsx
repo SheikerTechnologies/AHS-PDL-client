@@ -6,11 +6,11 @@ const siteUrl = "https://ahspdl.com";
 export const metadata: Metadata = {
   title: "Landowner Partnership | AHS Properties & Development Ltd.",
   description:
-    "Partner with AHS Properties to develop your land through a transparent, profitable joint venture. Get a free land evaluation today. RAJUK approved projects with no upfront cost.",
+    "Partner with AHS Properties to develop your land through a transparent, profitable joint venture. RAJUK approved projects with no upfront cost. Zero risk, maximum returns.",
   openGraph: {
     title: "Turn Your Land Into Lasting Value — Partner with AHS Properties",
     description:
-      "Develop your land through a safe, transparent joint venture with AHS Properties. In-house architects, on-time handover, and maximum returns. Get a free land evaluation.",
+      "Develop your land through a safe, transparent joint venture with AHS Properties. In-house architects, on-time handover, and maximum returns — with zero upfront cost.",
     url: `${siteUrl}/landowners`,
     images: [
       {
@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Landowner Partnership | AHS Properties & Development Ltd.",
     description:
-      "Develop your land through a safe, transparent joint venture with AHS Properties. Get a free land evaluation today.",
+      "Develop your land through a safe, transparent joint venture with AHS Properties. Zero risk with full transparency.",
     images: ["/opengraph-image.png"],
   },
   alternates: {

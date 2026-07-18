@@ -6,7 +6,6 @@ import ProcessTimeline from "@/components/landowners/ProcessTimeline";
 import SpaceCalculator from "@/components/landowners/SpaceCalculator";
 import Testimonials from "@/components/landowners/Testimonials";
 import FAQ from "@/components/landowners/FAQ";
-import LeadForm from "@/components/landowners/LeadForm";
 
 export default function LandownersPageClient() {
   return (
@@ -17,7 +16,6 @@ export default function LandownersPageClient() {
       <SpaceCalculator />
       <Testimonials />
       <FAQ />
-      <LeadForm />
     </div>
   );
 }

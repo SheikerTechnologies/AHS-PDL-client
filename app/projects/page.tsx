@@ -4,6 +4,7 @@
  */
 
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import ProjectsRouteClient from "./page-client";
 
 export const metadata: Metadata = {
@@ -36,5 +37,9 @@ export const metadata: Metadata = {
 };
 
 export default function ProjectsPage() {
-  return <ProjectsRouteClient />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-surface" />}>
+      <ProjectsRouteClient />
+    </Suspense>
+  );
 }

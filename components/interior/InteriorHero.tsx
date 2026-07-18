@@ -1,13 +1,9 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { ArrowRight, Paintbrush } from 'lucide-react';
+import { Paintbrush } from 'lucide-react';
 
-interface InteriorHeroProps {
-  onCtaClick: () => void;
-}
-
-export default function InteriorHero({ onCtaClick }: InteriorHeroProps) {
+export default function InteriorHero() {
   return (
     <section className="relative w-full min-h-[70vh] flex items-center justify-center overflow-hidden bg-surface pt-28 pb-16 select-none">
       {/* Subtle background pattern */}
@@ -54,13 +50,6 @@ export default function InteriorHero({ onCtaClick }: InteriorHeroProps) {
           transition={{ duration: 0.7, delay: 0.3 }}
           className="mt-10 flex flex-wrap items-center justify-center gap-4"
         >
-          <button
-            onClick={onCtaClick}
-            className="inline-flex items-center gap-2 bg-accent hover:bg-accent-hover text-text-on-accent text-sm font-extrabold px-7 py-3.5 rounded-full transition-all duration-200 shadow-lg hover:shadow-xl active:scale-95 cursor-pointer"
-          >
-            Book a Design Consultation
-            <ArrowRight className="w-4 h-4" />
-          </button>
         </motion.div>
       </div>
     </section>

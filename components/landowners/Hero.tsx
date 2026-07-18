@@ -71,25 +71,6 @@ export default function Hero() {
             className="mt-10 flex flex-col sm:flex-row gap-4"
           >
             <a
-              href="#lead-form"
-              className="inline-flex items-center justify-center gap-2 bg-[#b84822] hover:bg-[#a03d1b] text-white font-bold text-base sm:text-lg px-8 py-4 rounded-full shadow-xl shadow-[#b84822]/25 transition-all duration-300 hover:scale-105 active:scale-95 hover:shadow-[#b84822]/40"
-            >
-              {heroContent.cta.en}
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-                strokeWidth={2}
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M17 8l4 4m0 0l-4 4m4-4H3"
-                />
-              </svg>
-            </a>
-            <a
               href="#how-it-works"
               className="inline-flex items-center justify-center gap-2 bg-white/10 backdrop-blur-md hover:bg-white/20 text-white font-semibold text-base sm:text-lg px-8 py-4 rounded-full border border-white/30 transition-all duration-300 hover:scale-105 active:scale-95"
             >
