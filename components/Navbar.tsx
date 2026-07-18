@@ -9,7 +9,7 @@
  * - Active route detection via usePathname
  * - Primary nav items: Home, Projects, Landowners, Blog, About, Contact
  * - "More" dropdown (desktop hover / mobile expandable): Services, Layout
- * - Desktop: nav links, phone icon, Enquire Now button, theme toggle
+ * - Desktop: nav links, Enquire Now button, theme toggle
  * - Mobile: compact Enquire + hamburger in bar; slide-in drawer with Framer Motion
  *
  * NAV TEXT VISIBILITY FIX:
@@ -22,10 +22,9 @@ import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, Phone, MessageCircle, ArrowUpRight, ChevronDown } from 'lucide-react';
+import { Menu, X, ArrowUpRight, ChevronDown } from 'lucide-react';
 import AHSLogo from './AHSLogo';
 import ThemeToggle from './ThemeToggle';
-import { AGENTS } from '@/lib/data';
 
 /* ─── Constants ─────────────────────────────────────────────────── */
 
@@ -44,11 +43,6 @@ const MORE_ITEMS = [
   { label: 'Careers', href: '/careers' },
   { label: 'Layout', href: '/layout' },
 ] as const;
-
-// Use existing contact info from shared data (do not hardcode duplicate values)
-const PHONE_SALES = AGENTS[0].phone; // "01625-555700"
-const WHATSAPP_DIGITS = AGENTS[1].phone.replace(/[^0-9]/g, ''); // "01725555700" → used with country code
-const WHATSAPP_FULL = `880${WHATSAPP_DIGITS}`; // "8801725555700"
 
 /** Scroll window to top instantly on nav clicks */
 function scrollToTop() {
@@ -321,22 +315,8 @@ export default function Navbar() {
             />
           </nav>
 
-          {/* ---- Right: Phone + Enquire + ThemeToggle + Mobile group ---- */}
+          {/* ---- Right: Enquire + ThemeToggle + Mobile group ---- */}
           <div className="flex items-center gap-2 md:gap-3">
-            {/* Phone icon (desktop) — over dark hero gets white/glass look */}
-            <a
-              href={`tel:${PHONE_SALES}`}
-              className={`hidden lg:flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 ${
-                useLightText
-                  ? 'bg-white/10 text-white hover:bg-white/20 border border-white/20'
-                  : 'bg-surface-muted dark:bg-surface-raised text-text-secondary hover:text-accent hover:bg-accent/10 border border-border-light dark:border-border-main'
-              }`}
-              aria-label={`Call sales at ${PHONE_SALES}`}
-              title={`Call ${PHONE_SALES}`}
-            >
-              <Phone className="w-4 h-4" />
-            </a>
-
             {/* Enquire Now button (desktop) */}
             <button
               onClick={scrollToEnquire}
@@ -508,28 +488,6 @@ export default function Navbar() {
                   Enquire Now
                   <ArrowUpRight className="w-4 h-4" />
                 </button>
-              </div>
-
-              {/* ---- Call + WhatsApp side-by-side ---- */}
-              <div className="px-5 mt-4 flex gap-3">
-                <a
-                  href={`tel:${PHONE_SALES}`}
-                  className="flex-1 flex items-center justify-center gap-2 bg-surface-muted dark:bg-surface-raised border border-border-main text-text-main text-sm font-semibold px-4 py-3 rounded-xl hover:bg-accent/10 hover:text-accent hover:border-accent/30 transition-all duration-200"
-                  aria-label={`Call sales at ${PHONE_SALES}`}
-                >
-                  <Phone className="w-4 h-4" />
-                  Call
-                </a>
-                <a
-                  href={`https://wa.me/${WHATSAPP_FULL}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 flex items-center justify-center gap-2 bg-[#25D366]/10 border border-[#25D366]/30 text-[#25D366] text-sm font-semibold px-4 py-3 rounded-xl hover:bg-[#25D366]/20 hover:border-[#25D366]/50 transition-all duration-200"
-                  aria-label="Chat on WhatsApp"
-                >
-                  <MessageCircle className="w-4 h-4" />
-                  WhatsApp
-                </a>
               </div>
 
               {/* ---- Bottom spacer ---- */}
