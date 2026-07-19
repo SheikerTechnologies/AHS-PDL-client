@@ -40,7 +40,6 @@ const NAV_ITEMS = [
 const MORE_ITEMS = [
   { label: 'Services', href: '/services' },
   { label: 'Interior Design', href: '/services/interior-design' },
-  { label: 'Careers', href: '/careers' },
   { label: 'Layout', href: '/layout' },
 ] as const;
 

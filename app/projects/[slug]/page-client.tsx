@@ -12,7 +12,6 @@ import { DevelopmentProject } from '@/lib/types';
 import { PROJECT_EXTRAS, getDefaultExtras } from '@/lib/projectExtras';
 import ProjectGallery from '@/components/ProjectGallery';
 import FloorPlanTabs from '@/components/FloorPlanTabs';
-import InquirySidebar from '@/components/InquirySidebar';
 import RelatedProjects from '@/components/RelatedProjects';
 
 interface ProjectDetailClientProps {
@@ -162,10 +161,6 @@ export default function ProjectDetailClient({ project, images }: ProjectDetailCl
             </motion.div>
           </div>
 
-          {/* Sidebar — ~35% */}
-          <div className="lg:col-span-5 xl:col-span-4">
-            <InquirySidebar projectTitle={project.title} agentName={extras.coBroker} />
-          </div>
         </div>
 
         {/* Related projects */}

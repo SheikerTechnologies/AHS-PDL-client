@@ -7,7 +7,6 @@ import AboutHero from '@/components/sections/AboutHero';
 import AboutContentSection from '@/components/sections/AboutContentSection';
 import AboutBenefitsGrid from '@/components/sections/AboutBenefitsGrid';
 import AboutLeadership from '@/components/sections/AboutLeadership';
-import AboutLocationsGrid from '@/components/sections/AboutLocationsGrid';
 import AboutStatsBanner from '@/components/sections/AboutStatsBanner';
 import AboutCTA from '@/components/sections/AboutCTA';
 import AboutCEOMessageFull from '@/components/sections/AboutCEOMessageFull';
@@ -24,7 +23,6 @@ export default function AboutPage({ onInquireClick }: AboutPageProps) {
       <AboutBenefitsGrid />
       <AboutLeadership />
       <AboutCEOMessageFull />
-      <AboutLocationsGrid />
       <AboutStatsBanner />
       <AboutCTA onInquireClick={onInquireClick} />
     </div>
