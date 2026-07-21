@@ -32,7 +32,7 @@ export default function FeaturedArticleCard({
           {/* Image */}
           <div className="relative aspect-[4/3] md:aspect-auto md:h-full overflow-hidden">
             <Image
-              src={post.coverImage}
+              src={post.thumbnail}
               alt={post.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -65,7 +65,7 @@ export default function FeaturedArticleCard({
             <div className="mt-5 flex flex-wrap items-center gap-4 text-xs text-text-muted">
               <span className="flex items-center gap-1.5">
                 <CalendarDays className="w-3.5 h-3.5" />
-                {new Date(post.date).toLocaleDateString("en-US", {
+                {new Date(post.publishDate).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",

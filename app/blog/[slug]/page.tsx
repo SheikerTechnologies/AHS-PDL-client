@@ -6,7 +6,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 
-export const revalidate = 3600; // Revalidate every hour
+export const revalidate = 3600;
 import {
   getPostBySlug,
   getAllSlugs,
@@ -21,7 +21,7 @@ interface BlogArticlePageProps {
 }
 
 export async function generateStaticParams() {
-  const slugs = getAllSlugs();
+  const slugs = await getAllSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
@@ -29,41 +29,39 @@ export async function generateMetadata({
   params,
 }: BlogArticlePageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     return {};
   }
 
-  const { frontmatter } = post;
-
   return {
-    title: `${frontmatter.title} | AHS Properties Blog`,
-    description: frontmatter.excerpt,
+    title: `${post.title} | AHS Properties Blog`,
+    description: post.excerpt,
     openGraph: {
-      title: `${frontmatter.title} — AHS Properties Blog`,
-      description: frontmatter.excerpt,
+      title: `${post.title} — AHS Properties Blog`,
+      description: post.excerpt,
       type: "article",
-      publishedTime: frontmatter.date,
-      authors: [frontmatter.author],
+      publishedTime: post.publishDate,
+      authors: [post.author],
       images: [
         {
-          url: frontmatter.coverImage,
+          url: post.thumbnail,
           width: 1200,
           height: 630,
-          alt: frontmatter.title,
+          alt: post.title,
         },
       ],
-      url: `${siteUrl}/blog/${frontmatter.slug}`,
+      url: `${siteUrl}/blog/${post.slug}`,
     },
     twitter: {
       card: "summary_large_image",
-      title: `${frontmatter.title} — AHS Properties Blog`,
-      description: frontmatter.excerpt,
-      images: [frontmatter.coverImage],
+      title: `${post.title} — AHS Properties Blog`,
+      description: post.excerpt,
+      images: [post.thumbnail],
     },
     alternates: {
-      canonical: `${siteUrl}/blog/${frontmatter.slug}`,
+      canonical: `${siteUrl}/blog/${post.slug}`,
     },
   };
 }
@@ -72,31 +70,26 @@ export default async function BlogArticlePage({
   params,
 }: BlogArticlePageProps) {
   const { slug } = await params;
-  const post = getPostBySlug(slug);
+  const post = await getPostBySlug(slug);
 
   if (!post) {
     notFound();
   }
 
-  const { frontmatter, content } = post;
+  const relatedPosts = await getRelatedPosts(post.category, post.slug, 3);
 
-  // Get related articles
-  const relatedRaw = getRelatedPosts(frontmatter.category, frontmatter.slug, 3);
-  const relatedPosts = relatedRaw.map((r) => r.frontmatter);
-
-  // JSON-LD schemas
   const articleSchema = {
     "@context": "https://schema.org",
     "@type": "Article",
-    headline: frontmatter.title,
-    description: frontmatter.excerpt,
-    datePublished: frontmatter.date,
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.publishDate,
     author: {
       "@type": "Person",
-      name: frontmatter.author,
+      name: post.author,
     },
-    image: frontmatter.coverImage,
-    url: `${siteUrl}/blog/${frontmatter.slug}`,
+    image: post.thumbnail,
+    url: `${siteUrl}/blog/${post.slug}`,
     publisher: {
       "@type": "Organization",
       name: "AHS Properties & Development Ltd.",
@@ -111,29 +104,10 @@ export default async function BlogArticlePage({
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      {
-        "@type": "ListItem",
-        position: 1,
-        name: "Home",
-        item: siteUrl,
-      },
-      {
-        "@type": "ListItem",
-        position: 2,
-        name: "Blog",
-        item: `${siteUrl}/blog`,
-      },
-      {
-        "@type": "ListItem",
-        position: 3,
-        name: frontmatter.category,
-        item: `${siteUrl}/blog`,
-      },
-      {
-        "@type": "ListItem",
-        position: 4,
-        name: frontmatter.title,
-      },
+      { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+      { "@type": "ListItem", position: 2, name: "Blog", item: `${siteUrl}/blog` },
+      { "@type": "ListItem", position: 3, name: post.category, item: `${siteUrl}/blog` },
+      { "@type": "ListItem", position: 4, name: post.title },
     ],
   };
 
@@ -152,8 +126,8 @@ export default async function BlogArticlePage({
         }}
       />
       <ArticlePageClient
-        post={frontmatter}
-        content={content}
+        post={post}
+        content={post.content}
         relatedPosts={relatedPosts}
       />
     </>

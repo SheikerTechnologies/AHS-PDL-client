@@ -10,13 +10,14 @@ const nextConfig: NextConfig = {
         hostname: "images.unsplash.com",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        pathname: "/**",
+      },
     ],
   },
 
-  // Proxy /api/* and /uploads/* requests to the Express backend server.
-  // In development, API_URL defaults to http://localhost:3001.
-  // In production (Vercel), set API_URL in Vercel environment variables
-  // to your deployed server URL, e.g. https://api.ahspdl.com
   async rewrites() {
     const apiUrl = process.env.API_URL || "http://localhost:3001";
     return [
@@ -33,13 +34,20 @@ const nextConfig: NextConfig = {
 
   async headers() {
     const apiUrl = process.env.API_URL || "http://localhost:3001";
+    const isDev = process.env.NODE_ENV === "development";
+
+    const scriptSrc = [
+      "'self'",
+      "'unsafe-inline'",
+      ...(isDev ? ["'unsafe-eval'"] : []),
+    ].join(" ");
 
     const cspHeader = `
       default-src 'self';
-      script-src 'self' 'unsafe-inline';
+      script-src ${scriptSrc};
       style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com data:;
-      img-src 'self' https://images.unsplash.com data: blob: ${apiUrl};
+      img-src 'self' https://images.unsplash.com https://res.cloudinary.com data: blob: ${apiUrl};
       frame-src 'self' https://maps.google.com https://www.google.com;
       connect-src 'self' ${apiUrl};
       object-src 'none';

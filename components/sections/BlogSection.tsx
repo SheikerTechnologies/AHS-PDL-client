@@ -6,7 +6,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { getAllPosts } from "@/lib/blog";
-import type { BlogCategory } from "@/lib/blog-types";
 import { ArrowRight, CalendarDays, Clock } from "lucide-react";
 import AnimatedBlogCard from "@/components/blog/AnimatedBlogCard";
 import AnimatedSectionHeader from "@/components/blog/AnimatedSectionHeader";
@@ -15,14 +14,8 @@ import AnimatedSectionHeader from "@/components/blog/AnimatedSectionHeader";
 // without a full rebuild.
 export const revalidate = 3600;
 
-/** Only show news, market trends, and events (not "Property guides"). */
-const HOME_CATEGORIES: BlogCategory[] = ["Company news", "Market trends", "Events"];
-
-export default function BlogSection() {
-  const posts = getAllPosts()
-    .filter((p) => HOME_CATEGORIES.includes(p.frontmatter.category))
-    .slice(0, 3)
-    .map((p) => p.frontmatter);
+export default async function BlogSection() {
+  const posts = (await getAllPosts()).slice(0, 3);
 
   return (
     <section
@@ -66,7 +59,7 @@ export default function BlogSection() {
                   {/* Image */}
                   <div className="relative aspect-[16/10] overflow-hidden">
                     <Image
-                      src={post.coverImage}
+                      src={post.thumbnail}
                       alt={post.title}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -82,7 +75,7 @@ export default function BlogSection() {
                     <div className="flex items-center gap-3 text-[11px] text-text-muted mb-2">
                       <span className="flex items-center gap-1">
                         <CalendarDays className="w-3 h-3" />
-                        {new Date(post.date).toLocaleDateString("en-US", {
+                        {new Date(post.publishDate).toLocaleDateString("en-US", {
                           year: "numeric",
                           month: "short",
                           day: "numeric",

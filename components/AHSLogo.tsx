@@ -44,6 +44,7 @@ export default function AHSLogo({
         <div style={{ height: iconSize, width: iconSize * 3 }} className="relative">
           <Image
             src="/assets/ahspdLogoL.png"
+             loading="eager"
             alt="AHS Properties & Development Ltd."
             fill
             className="object-contain"

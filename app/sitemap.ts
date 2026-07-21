@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getAllSlugs } from "@/lib/blog";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://ahspdl.com";
 
   const staticPages = [
@@ -56,7 +56,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   // Add blog article slugs
-  const slugs = getAllSlugs();
+  const slugs = await getAllSlugs();
   const blogEntries = slugs.map((slug: string) => ({
     url: `${baseUrl}/blog/${slug}`,
     lastModified: new Date(),

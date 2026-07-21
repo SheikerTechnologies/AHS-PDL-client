@@ -9,13 +9,12 @@ import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react';
-import { ProjectStatus } from '@/lib/types';
 import Lightbox from './Lightbox';
 
 interface ProjectGalleryProps {
   images: string[];
   projectTitle: string;
-  status: ProjectStatus;
+  status: string;
 }
 
 export default function ProjectGallery({ images, projectTitle, status }: ProjectGalleryProps) {
@@ -83,17 +82,17 @@ export default function ProjectGallery({ images, projectTitle, status }: Project
           <div className="absolute top-4 left-4 z-10">
             <span
               className={`inline-flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full backdrop-blur-sm border ${
-                status === 'ONGOING'
+                status?.toLowerCase() === 'ongoing'
                   ? 'bg-teal-500/20 text-teal-300 border-teal-400/30'
                   : 'bg-coral-500/20 text-coral-300 border-coral-400/30'
               }`}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  status === 'ONGOING' ? 'bg-teal-400' : 'bg-coral-400'
+                  status?.toLowerCase() === 'ongoing' ? 'bg-teal-400' : 'bg-coral-400'
                 }`}
               />
-              {status === 'ONGOING' ? 'Ongoing' : 'Completed'}
+              {status?.toLowerCase() === 'ongoing' ? 'Ongoing' : 'Completed'}
             </span>
           </div>
 
@@ -147,7 +146,7 @@ export default function ProjectGallery({ images, projectTitle, status }: Project
           >
             {images.map((img, idx) => (
               <button
-                key={idx}
+                key={`${img}-${idx}`}
                 onClick={() => goToImage(idx)}
                 className={`relative shrink-0 w-20 h-16 rounded-lg overflow-hidden border-2 transition-all duration-200 ${
                   idx === activeIndex

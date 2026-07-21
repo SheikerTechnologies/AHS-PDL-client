@@ -32,7 +32,7 @@ export default function ArticleCard({ post, index = 0 }: ArticleCardProps) {
           {/* Image */}
           <div className="relative aspect-[16/10] overflow-hidden">
             <Image
-              src={post.coverImage}
+              src={post.thumbnail}
               alt={post.title}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -58,7 +58,7 @@ export default function ArticleCard({ post, index = 0 }: ArticleCardProps) {
             <div className="mt-4 flex items-center gap-3 text-[11px] text-text-muted border-t border-border-light pt-3">
               <span className="flex items-center gap-1">
                 <CalendarDays className="w-3 h-3" />
-                {new Date(post.date).toLocaleDateString("en-US", {
+                {new Date(post.publishDate).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "short",
                   day: "numeric",

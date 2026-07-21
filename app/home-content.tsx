@@ -20,11 +20,14 @@ import VideoSection from "@/components/VideoSection";
 import Testimonials from "@/components/Testimonials";
 import { useAppContext } from "./providers";
 
+import type { DevelopmentProject } from "@/lib/types";
+
 interface HomeContentProps {
   blogSection: ReactNode;
+  projects: DevelopmentProject[];
 }
 
-export default function HomeContent({ blogSection }: HomeContentProps) {
+export default function HomeContent({ blogSection, projects }: HomeContentProps) {
   const { themeAnalyzerOpen, setThemeAnalyzerOpen } = useAppContext();
 
   const [blurLevel, setBlurLevel] = useState<string>("md");
@@ -73,7 +76,8 @@ export default function HomeContent({ blogSection }: HomeContentProps) {
           </p>
         </div>
         <PropertySearch
-          maxItems={6}
+          projects={projects}
+          maxItems={3}
           viewAllHref="/projects"
         />
       </section>

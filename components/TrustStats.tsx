@@ -7,11 +7,11 @@
 
 import { motion } from "motion/react";
 import { useEffect, useRef, useState } from "react";
-import { CLIENT_METADATA, DEVELOPMENT_PROJECTS } from "@/lib/data";
+import { CLIENT_METADATA } from "@/lib/data";
+import { getProjects } from "@/lib/api/projects";
 import { Building2, ShieldCheck, ScrollText, Handshake } from "lucide-react";
 
 const partnerCount = CLIENT_METADATA.length;
-const activeProjects = DEVELOPMENT_PROJECTS.filter((p) => p.status === "ONGOING").length;
 
 interface StatItemProps {
   icon: React.ComponentType<{ className?: string }>;
@@ -101,34 +101,45 @@ function StatItem({ icon: Icon, label, target, suffix, isPercentage, isYear, idx
   );
 }
 
-const STATS: Omit<StatItemProps, "idx">[] = [
-  {
-    icon: Handshake,
-    label: "Government & Institutional Partners",
-    target: partnerCount,
-    suffix: "+",
-  },
-  {
-    icon: Building2,
-    label: "Active Projects",
-    target: activeProjects,
-    suffix: "",
-  },
-  {
-    icon: ShieldCheck,
-    label: "RAJUK Approved",
-    target: 100,
-    isPercentage: true,
-  },
-  {
-    icon: ScrollText,
-    label: "RJSC Registered Since",
-    target: 2025,
-    isYear: true,
-  },
-];
-
 export default function TrustStats() {
+  const [activeProjects, setActiveProjects] = useState(0);
+
+  useEffect(() => {
+    getProjects().then((projects) => {
+      const count = projects.filter(
+        (p) => p.status?.toLowerCase() === 'ongoing'
+      ).length;
+      setActiveProjects(count);
+    }).catch(() => {});
+  }, []);
+
+  const STATS: Omit<StatItemProps, "idx">[] = [
+    {
+      icon: Handshake,
+      label: "Government & Institutional Partners",
+      target: partnerCount,
+      suffix: "+",
+    },
+    {
+      icon: Building2,
+      label: "Active Projects",
+      target: activeProjects,
+      suffix: "",
+    },
+    {
+      icon: ShieldCheck,
+      label: "RAJUK Approved",
+      target: 100,
+      isPercentage: true,
+    },
+    {
+      icon: ScrollText,
+      label: "RJSC Registered Since",
+      target: 2025,
+      isYear: true,
+    },
+  ];
+
   return (
     <section className="w-full bg-surface-alt border-b border-border-main/50 py-12 md:py-16 select-none">
       <div className="w-full max-w-7xl mx-auto px-6 md:px-8">

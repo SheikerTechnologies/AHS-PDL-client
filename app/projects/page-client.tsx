@@ -8,7 +8,6 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
 import { motion } from 'motion/react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { DEVELOPMENT_PROJECTS } from '@/lib/data';
 import type { DevelopmentProject, ProjectStatus } from '@/lib/types';
 import ProjectCard from '@/components/ProjectCard';
 import ProjectFilters from '@/components/ProjectFilters';
@@ -17,13 +16,22 @@ import TrustBadges from '@/components/TrustBadges';
 
 const PROJECTS_PER_PAGE = 12;
 
+interface ProjectsRouteClientProps {
+  projects: DevelopmentProject[];
+}
+
+function getLocationString(project: DevelopmentProject): string {
+  const parts = [project.location.area, project.location.city].filter(Boolean);
+  return parts.join(', ') || project.location.address;
+}
+
 /** Shared search matcher used by both the main filter and dynamic count badges. */
 function matchesSearch(project: DevelopmentProject, query: string): boolean {
   if (query === '') return true;
   const q = query.toLowerCase();
   return (
     project.title.toLowerCase().includes(q) ||
-    project.location.toLowerCase().includes(q) ||
+    getLocationString(project).toLowerCase().includes(q) ||
     project.description.toLowerCase().includes(q)
   );
 }
@@ -32,11 +40,11 @@ function matchesSearch(project: DevelopmentProject, query: string): boolean {
 function parseStatusParam(raw: string | null): ProjectStatus[] {
   if (!raw) return [];
   return raw.split(',').filter((s): s is ProjectStatus =>
-    s === 'ONGOING' || s === 'COMPLETED'
+    s === 'Ongoing' || s === 'Completed'
   );
 }
 
-export default function ProjectsRouteClient() {
+export default function ProjectsRouteClient({ projects }: ProjectsRouteClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -52,14 +60,14 @@ export default function ProjectsRouteClient() {
   });
 
   // Saved projects (localStorage)
-  const [savedProjects, setSavedProjects] = useState<string[]>([]);
-
-  useEffect(() => {
+  const [savedProjects, setSavedProjects] = useState<string[]>(() => {
     try {
       const stored = localStorage.getItem('ahsp-saved-projects');
-      if (stored) setSavedProjects(JSON.parse(stored));
-    } catch {}
-  }, []);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const persistSaved = (ids: string[]) => {
     setSavedProjects(ids);
@@ -94,41 +102,41 @@ export default function ProjectsRouteClient() {
 
   // ── Dynamic count badges ───────────────────────────────────────────
   const dynamicStatusCounts = useMemo(() => {
-    const base = DEVELOPMENT_PROJECTS.filter((p) => {
+    const base = projects.filter((p) => {
       const searchMatch = matchesSearch(p, searchQuery);
-      const areaMatch = selectedArea === 'All' || p.area === selectedArea;
+      const areaMatch = selectedArea === 'All' || p.location.area === selectedArea;
       return searchMatch && areaMatch;
     });
     return {
-      ONGOING: base.filter((p) => p.status === 'ONGOING').length,
-      COMPLETED: base.filter((p) => p.status === 'COMPLETED').length,
+      Ongoing: base.filter((p) => p.status?.toLowerCase() === 'ongoing').length,
+      Completed: base.filter((p) => p.status?.toLowerCase() === 'completed').length,
     };
-  }, [searchQuery, selectedArea]);
+  }, [projects, searchQuery, selectedArea]);
 
   const dynamicLocationCounts = useMemo(() => {
-    const base = DEVELOPMENT_PROJECTS.filter((p) => {
+    const base = projects.filter((p) => {
       const searchMatch = matchesSearch(p, searchQuery);
       const statusMatch =
-        selectedStatuses.length === 0 || selectedStatuses.includes(p.status);
+        selectedStatuses.length === 0 || selectedStatuses.includes(p.status as ProjectStatus);
       return searchMatch && statusMatch;
     });
     const counts: Record<string, number> = { All: base.length };
     for (const p of base) {
-      counts[p.area] = (counts[p.area] ?? 0) + 1;
+      counts[p.location.area] = (counts[p.location.area] ?? 0) + 1;
     }
     return counts;
-  }, [searchQuery, selectedStatuses]);
+  }, [projects, searchQuery, selectedStatuses]);
 
   // ── Derived filter logic ───────────────────────────────────────────
   const filteredProjects = useMemo(() => {
-    return DEVELOPMENT_PROJECTS.filter((project) => {
+    return projects.filter((project) => {
       const searchMatch = matchesSearch(project, searchQuery);
       const statusMatch =
-        selectedStatuses.length === 0 || selectedStatuses.includes(project.status);
-      const areaMatch = selectedArea === 'All' || project.area === selectedArea;
+        selectedStatuses.length === 0 || selectedStatuses.includes(project.status as ProjectStatus);
+      const areaMatch = selectedArea === 'All' || project.location.area === selectedArea;
       return searchMatch && statusMatch && areaMatch;
     });
-  }, [searchQuery, selectedStatuses, selectedArea]);
+  }, [projects, searchQuery, selectedStatuses, selectedArea]);
 
   // Pagination
   const totalPages = Math.ceil(filteredProjects.length / PROJECTS_PER_PAGE);

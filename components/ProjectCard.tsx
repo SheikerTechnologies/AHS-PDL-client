@@ -20,9 +20,21 @@ interface ProjectCardProps {
   index?: number;
 }
 
+function getLocationString(project: DevelopmentProject): string {
+  const parts = [project.location.area, project.location.city].filter(Boolean);
+  return parts.join(', ') || project.location.address;
+}
+
+function getPercentAvailable(project: DevelopmentProject): number {
+  if (!project.overview || project.overview.totalUnits === 0) return 0;
+  return Math.round((project.overview.availableUnits / project.overview.totalUnits) * 100);
+}
+
 export default function ProjectCard({ project, isSaved, onToggleSave, onInquire, index = 0 }: ProjectCardProps) {
-  const slug = titleToSlug(project.title);
-  const photoCount = project.photoCount || project.images?.length || 0;
+  const slug = project.slug || titleToSlug(project.title);
+  const photoCount = project.gallery?.length || 0;
+  const percentAvailable = getPercentAvailable(project);
+  const isOngoing = project.status?.toLowerCase() === 'ongoing';
 
   return (
     <motion.div
@@ -38,7 +50,7 @@ export default function ProjectCard({ project, isSaved, onToggleSave, onInquire,
         {/* Image container — ~80% of card height */}
         <div className="relative aspect-[3/4] overflow-hidden bg-surface-muted">
           <Image
-            src={project.image}
+            src={project.coverImage}
             alt={project.title}
             fill
             className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -53,17 +65,17 @@ export default function ProjectCard({ project, isSaved, onToggleSave, onInquire,
           <div className="absolute top-3 left-3 z-10">
             <span
               className={`inline-flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest px-2.5 py-1 rounded-full backdrop-blur-sm border ${
-                project.status === 'ONGOING'
+                isOngoing
                   ? 'bg-teal-500/20 text-teal-300 border-teal-400/30'
                   : 'bg-coral-500/20 text-coral-300 border-coral-400/30'
               }`}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  project.status === 'ONGOING' ? 'bg-teal-400' : 'bg-coral-400'
+                  isOngoing ? 'bg-teal-400' : 'bg-coral-400'
                 }`}
               />
-              {project.status === 'ONGOING' ? 'Ongoing' : 'Completed'}
+              {isOngoing ? 'Ongoing' : 'Completed'}
             </span>
           </div>
 
@@ -91,7 +103,7 @@ export default function ProjectCard({ project, isSaved, onToggleSave, onInquire,
           {/* Availability % — bottom-right */}
           <div className="absolute bottom-3 right-3 z-10 text-right">
             <span className="text-xs font-bold text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.5)]">
-              {project.percentAvailable}%
+              {percentAvailable}%
             </span>
             <span className="block text-[9px] text-white/70 uppercase tracking-wider">
               Available
@@ -105,7 +117,7 @@ export default function ProjectCard({ project, isSaved, onToggleSave, onInquire,
             {project.title}
           </h3>
           <p className="text-xs text-text-secondary mt-0.5 line-clamp-1">
-            {project.location}
+            {getLocationString(project)}
           </p>
 
           {onInquire && (

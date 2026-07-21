@@ -16,8 +16,8 @@ import {
 import { ProjectStatus } from '@/lib/types';
 
 const STATUS_OPTIONS: { value: ProjectStatus; label: string }[] = [
-  { value: 'ONGOING', label: 'Ongoing' },
-  { value: 'COMPLETED', label: 'Completed' },
+  { value: 'Ongoing', label: 'Ongoing' },
+  { value: 'Completed', label: 'Completed' },
 ];
 
 const LOCATION_OPTIONS = ['All', 'Jolshiri Abashon', 'Nayapaltan'];
@@ -37,7 +37,7 @@ interface ProjectFiltersProps {
   onClearFilters: () => void;
   hasActiveFilters: boolean;
   resultCount: number;
-  statusCounts: Record<ProjectStatus, number>;
+  statusCounts: Record<string, number>;
   locationCounts: Record<string, number>;
 }
 
@@ -81,13 +81,13 @@ export default function ProjectFilters({
     }
   };
 
-  const FilterDropdowns = () => {
-    const statusTriggerCount = selectedStatuses.length === 0
-      ? (statusCounts.ONGOING ?? 0) + (statusCounts.COMPLETED ?? 0)
-      : selectedStatuses.length === 1
-        ? (statusCounts[selectedStatuses[0]] ?? 0)
-        : resultCount;
+  const statusTriggerCount = selectedStatuses.length === 0
+    ? (statusCounts['Ongoing' as ProjectStatus] ?? 0) + (statusCounts['Completed' as ProjectStatus] ?? 0)
+    : selectedStatuses.length === 1
+      ? (statusCounts[selectedStatuses[0]] ?? 0)
+      : resultCount;
 
+  function renderFilterDropdowns() {
     return (
     <div className="flex flex-wrap items-center gap-3">
       {/* Status multi-select */}
@@ -100,7 +100,7 @@ export default function ProjectFilters({
             {selectedStatuses.length === 0
               ? 'Status'
               : selectedStatuses.length === 1
-              ? selectedStatuses[0] === 'ONGOING'
+              ? selectedStatuses[0] === 'Ongoing'
                 ? 'Ongoing'
                 : 'Completed'
               : `${selectedStatuses.length} selected`}
@@ -200,7 +200,7 @@ export default function ProjectFilters({
 
     </div>
   );
-  };
+  }
 
   return (
     <div className="flex flex-col gap-4" ref={dropdownRef}>
@@ -241,7 +241,7 @@ export default function ProjectFilters({
 
       {/* Desktop filter bar */}
       <div className="hidden md:flex flex-wrap items-center justify-between gap-3">
-        <FilterDropdowns />
+        {renderFilterDropdowns()}
 
         {hasActiveFilters && (
           <button
@@ -265,7 +265,7 @@ export default function ProjectFilters({
             className="md:hidden overflow-hidden"
           >
             <div className="flex flex-wrap items-center gap-2 pt-2 pb-1">
-              <FilterDropdowns />
+              {renderFilterDropdowns()}
             </div>
             {hasActiveFilters && (
               <button

@@ -11,7 +11,7 @@ import Link from 'next/link';
 import { motion } from 'motion/react';
 import { Camera } from 'lucide-react';
 import { DevelopmentProject } from '@/lib/types';
-import { DEVELOPMENT_PROJECTS } from '@/lib/data';
+import { getProjects } from '@/lib/api/projects';
 import { titleToSlug } from '@/lib/slugs';
 
 interface RelatedProjectsProps {
@@ -19,20 +19,22 @@ interface RelatedProjectsProps {
   maxItems?: number;
 }
 
+function getLocationString(project: DevelopmentProject): string {
+  const parts = [project.location.area, project.location.city].filter(Boolean);
+  return parts.join(', ') || project.location.address;
+}
+
 export default function RelatedProjects({ currentProject, maxItems = 3 }: RelatedProjectsProps) {
-  const [saved, setSaved] = useState<string[]>([]);
+  const [projects, setProjects] = useState<DevelopmentProject[]>([]);
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem('ahsp-saved-projects');
-      if (stored) setSaved(JSON.parse(stored));
-    } catch {}
+    getProjects().then(setProjects).catch(() => {});
   }, []);
 
-  const related = DEVELOPMENT_PROJECTS.filter(
+  const related = projects.filter(
     (p) =>
       p.id !== currentProject.id &&
-      (p.area === currentProject.area || p.status === currentProject.status)
+      (p.location.area === currentProject.location.area || p.status === currentProject.status)
   )
     .slice(0, maxItems);
 
@@ -44,8 +46,9 @@ export default function RelatedProjects({ currentProject, maxItems = 3 }: Relate
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {related.map((project, idx) => {
-          const slug = titleToSlug(project.title);
-          const photoCount = project.photoCount || project.images?.length || 0;
+          const slug = project.slug || titleToSlug(project.title);
+          const photoCount = project.gallery?.length || 0;
+          const isOngoing = project.status?.toLowerCase() === 'ongoing';
 
           return (
             <motion.div
@@ -60,7 +63,7 @@ export default function RelatedProjects({ currentProject, maxItems = 3 }: Relate
               >
                 <div className="relative aspect-[3/4] overflow-hidden bg-surface-muted">
                   <Image
-                    src={project.image}
+                    src={project.coverImage}
                     alt={project.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -73,17 +76,17 @@ export default function RelatedProjects({ currentProject, maxItems = 3 }: Relate
                   <div className="absolute top-2.5 left-2.5">
                     <span
                       className={`inline-flex items-center gap-1 text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full backdrop-blur-sm border ${
-                        project.status === 'ONGOING'
+                        isOngoing
                           ? 'bg-teal-500/20 text-teal-300 border-teal-400/30'
                           : 'bg-coral-500/20 text-coral-300 border-coral-400/30'
                       }`}
                     >
                       <span
                         className={`w-1 h-1 rounded-full ${
-                          project.status === 'ONGOING' ? 'bg-teal-400' : 'bg-coral-400'
+                          isOngoing ? 'bg-teal-400' : 'bg-coral-400'
                         }`}
                       />
-                      {project.status === 'ONGOING' ? 'Ongoing' : 'Done'}
+                      {isOngoing ? 'Ongoing' : 'Done'}
                     </span>
                   </div>
 
@@ -101,7 +104,7 @@ export default function RelatedProjects({ currentProject, maxItems = 3 }: Relate
                     {project.title}
                   </h3>
                   <p className="text-[11px] text-text-secondary mt-0.5 line-clamp-1">
-                    {project.location}
+                    {getLocationString(project)}
                   </p>
                 </div>
               </Link>

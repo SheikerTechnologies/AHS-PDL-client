@@ -5,6 +5,7 @@
 
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { getProjects } from "@/lib/api/projects";
 import ProjectsRouteClient from "./page-client";
 
 export const metadata: Metadata = {
@@ -36,10 +37,12 @@ export const metadata: Metadata = {
   },
 };
 
-export default function ProjectsPage() {
+export default async function ProjectsPage() {
+  const projects = await getProjects();
+
   return (
     <Suspense fallback={<div className="min-h-screen bg-surface" />}>
-      <ProjectsRouteClient />
+      <ProjectsRouteClient projects={projects} />
     </Suspense>
   );
 }

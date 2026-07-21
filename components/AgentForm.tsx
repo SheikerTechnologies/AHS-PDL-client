@@ -30,7 +30,8 @@ export default function AgentForm({
   // Set placeholder message based on selected project
   const getPlaceholder = () => {
     if (selectedProject) {
-      return `Hi, I'm interested in learning more about "${selectedProject.title}" in ${selectedProject.location}. Please share pricing and availability details.`;
+      const loc = [selectedProject.location.area, selectedProject.location.city].filter(Boolean).join(', ') || selectedProject.location.address;
+      return `Hi, I'm interested in learning more about "${selectedProject.title}" in ${loc}. Please share pricing and availability details.`;
     }
     return "Tell us about your property interests and requirements...";
   };
@@ -177,7 +178,7 @@ export default function AgentForm({
                 <div className="bg-surface-muted p-2.5 rounded-xl border border-border-light/50 flex gap-2.5 items-center mt-2">
                   <div className="relative w-10 h-10 rounded-lg overflow-hidden shrink-0">
                     <Image
-                      src={selectedProject.image || '/assets/ahspdl1.png'}
+                      src={selectedProject.coverImage || '/assets/ahspdl1.png'}
                       alt={selectedProject.title}
                       fill
                       className="object-cover"

@@ -20,8 +20,8 @@ interface BlogListingClientProps {
 export default function BlogListingClient({ posts }: BlogListingClientProps) {
   const [visibleCount, setVisibleCount] = useState(POSTS_PER_PAGE);
 
-  const featuredPost = posts.length > 0 ? posts[0] : null;
-  const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
+  const featuredPost = posts.find((p) => p.featured) || posts[0] || null;
+  const remainingPosts = featuredPost ? posts.filter((p) => p.slug !== featuredPost.slug) : [];
   const visiblePosts = remainingPosts.slice(0, visibleCount);
   const hasMore = visibleCount < remainingPosts.length;
 

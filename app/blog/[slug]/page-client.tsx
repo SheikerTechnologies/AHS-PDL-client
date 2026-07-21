@@ -11,13 +11,14 @@ import { motion } from "motion/react";
 import { CalendarDays, Clock, ChevronRight, ArrowLeft } from "lucide-react";
 import type { BlogPostFrontmatter } from "@/lib/blog-types";
 import ArticleBody from "@/components/blog/ArticleBody";
+import type { ContentBlock } from "@/lib/blog-types";
 import ShareButtons from "@/components/blog/ShareButtons";
 import AuthorBox from "@/components/blog/AuthorBox";
 import RelatedArticles from "@/components/blog/RelatedArticles";
 
 interface ArticlePageClientProps {
   post: BlogPostFrontmatter;
-  content: string;
+  content: ContentBlock[];
   relatedPosts: BlogPostFrontmatter[];
 }
 
@@ -86,7 +87,7 @@ export default function ArticlePageClient({
             <div className="flex flex-wrap items-center gap-4 mt-5 text-sm text-text-muted">
               <span className="flex items-center gap-1.5">
                 <CalendarDays className="w-4 h-4" />
-                {new Date(post.date).toLocaleDateString("en-US", {
+                {new Date(post.publishDate).toLocaleDateString("en-US", {
                   year: "numeric",
                   month: "long",
                   day: "numeric",
@@ -114,7 +115,7 @@ export default function ArticlePageClient({
           className="mt-10 relative aspect-[16/9] md:aspect-[21/9] rounded-3xl overflow-hidden shadow-xl border border-border-light"
         >
           <Image
-            src={post.coverImage}
+            src={post.thumbnail}
             alt={post.title}
             fill
             className="object-cover"

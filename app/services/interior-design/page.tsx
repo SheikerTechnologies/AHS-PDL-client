@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import InteriorDesignPageClient from "./page-client";
+import { getDesigns } from "@/lib/api/designs";
+import { toInteriorDesign, type InteriorDesign } from "@/lib/designs";
 
 const siteUrl = "https://ahspdl.com";
 
@@ -33,6 +35,14 @@ export const metadata: Metadata = {
   },
 };
 
-export default function InteriorDesignPage() {
-  return <InteriorDesignPageClient />;
+export default async function InteriorDesignPage() {
+  let designs: InteriorDesign[] = [];
+  try {
+    const rawDesigns = await getDesigns();
+    designs = rawDesigns.map(toInteriorDesign);
+  } catch {
+    designs = [];
+  }
+
+  return <InteriorDesignPageClient designs={designs} />;
 }

@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 
 export const revalidate = 3600; // Revalidate every hour
 
-export default function BlogPage() {
-  const posts = getAllPosts().map((p) => p.frontmatter);
+export default async function BlogPage() {
+  const posts = await getAllPosts();
   return <BlogListingClient posts={posts} />;
 }

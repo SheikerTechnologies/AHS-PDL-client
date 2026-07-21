@@ -18,7 +18,7 @@
  * regardless of scroll position. Text always reverts to brand colors on scroll.
  */
 
-import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo, startTransition } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
@@ -226,8 +226,10 @@ export default function Navbar() {
 
   /* ---- Close drawer on route change ---- */
   useEffect(() => {
-    setMobileMenuOpen(false);
-    setMobileMoreOpen(false);
+    startTransition(() => {
+      setMobileMenuOpen(false);
+      setMobileMoreOpen(false);
+    });
   }, [pathname]);
 
   /* ---- Active link check ---- */

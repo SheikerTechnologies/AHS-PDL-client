@@ -5,31 +5,35 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, startTransition } from 'react';
 import { Sun, Moon } from 'lucide-react';
+
+function getInitialDark(): boolean {
+  try {
+    const stored = localStorage.getItem('ahsp-theme');
+    if (stored === 'dark') return true;
+    if (stored === 'light') return false;
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  } catch {
+    return false;
+  }
+}
 
 export default function ThemeToggle() {
   const [dark, setDark] = useState(false);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
-    // Check localStorage first, then system preference
-    const stored = localStorage.getItem('ahsp-theme');
-    if (stored === 'dark') {
-      setDark(true);
-      document.documentElement.classList.add('dark');
-    } else if (stored === 'light') {
-      setDark(false);
-      document.documentElement.classList.remove('dark');
-    } else {
-      // Fall back to system preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setDark(prefersDark);
-      if (prefersDark) {
+    startTransition(() => {
+      setMounted(true);
+      const initial = getInitialDark();
+      setDark(initial);
+      if (initial) {
         document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
       }
-    }
+    });
   }, []);
 
   const toggle = useCallback(() => {

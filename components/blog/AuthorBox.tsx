@@ -10,8 +10,8 @@ import { motion } from "motion/react";
 
 interface AuthorBoxProps {
   name: string;
-  bio: string;
-  avatar: string;
+  bio?: string;
+  avatar?: string;
 }
 
 export default function AuthorBox({ name, bio, avatar }: AuthorBoxProps) {
@@ -43,9 +43,11 @@ export default function AuthorBox({ name, bio, avatar }: AuthorBoxProps) {
       {/* Info */}
       <div className="flex-1 min-w-0">
         <h4 className="text-sm font-bold text-text-main">{name}</h4>
-        <p className="mt-1 text-sm text-text-secondary leading-relaxed">
-          {bio}
-        </p>
+        {bio && (
+          <p className="mt-1 text-sm text-text-secondary leading-relaxed">
+            {bio}
+          </p>
+        )}
       </div>
     </motion.div>
   );

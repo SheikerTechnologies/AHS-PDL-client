@@ -5,9 +5,8 @@
 
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { DEVELOPMENT_PROJECTS } from "@/lib/data";
-import { getProjectIdBySlug, getAllProjectSlugs } from "@/lib/slugs";
-import { titleToSlug } from "@/lib/slugs";
+import { getProjectBySlug } from "@/lib/api/projects";
+import { getAllProjectSlugs } from "@/lib/slugs";
 import ProjectDetailClient from "./page-client";
 
 const siteUrl = "https://ahspdl.com";
@@ -17,19 +16,24 @@ interface ProjectPageProps {
 }
 
 export async function generateStaticParams() {
-  const slugs = getAllProjectSlugs();
+  const slugs = await getAllProjectSlugs();
   return slugs.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: ProjectPageProps): Promise<Metadata> {
   const { slug } = await params;
-  const projectId = getProjectIdBySlug(slug);
-  const project = DEVELOPMENT_PROJECTS.find((p) => p.id === projectId);
+  const project = await getProjectBySlug(slug);
 
   if (!project) return {};
 
+  const locationStr = [project.location.area, project.location.city].filter(Boolean).join(', ') || project.location.address;
+  const percentAvailable = project.overview.totalUnits > 0
+    ? Math.round((project.overview.availableUnits / project.overview.totalUnits) * 100)
+    : 0;
+  const isOngoing = project.status?.toLowerCase() === 'ongoing';
+
   const title = `${project.title} | AHS Properties & Development Ltd.`;
-  const description = `${project.title} — ${project.type} in ${project.location}. ${project.status === 'ONGOING' ? 'Currently under development.' : 'Completed project.'} ${project.percentAvailable}% units available.`;
+  const description = `${project.title} — Apartment in ${locationStr}. ${isOngoing ? 'Currently under development.' : 'Completed project.'} ${percentAvailable}% units available.`;
 
   return {
     title,
@@ -40,7 +44,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
       type: "website",
       images: [
         {
-          url: project.image.startsWith("http") ? project.image : `${siteUrl}${project.image}`,
+          url: project.coverImage.startsWith("http") ? project.coverImage : `${siteUrl}${project.coverImage}`,
           width: 1200,
           height: 630,
           alt: project.title,
@@ -52,7 +56,7 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
       card: "summary_large_image",
       title: `${project.title} — AHS Properties`,
       description,
-      images: [project.image.startsWith("http") ? project.image : `${siteUrl}${project.image}`],
+      images: [project.coverImage.startsWith("http") ? project.coverImage : `${siteUrl}${project.coverImage}`],
     },
     alternates: {
       canonical: `${siteUrl}/projects/${slug}`,
@@ -62,37 +66,42 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
 export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const { slug } = await params;
-  const projectId = getProjectIdBySlug(slug);
-  const project = DEVELOPMENT_PROJECTS.find((p) => p.id === projectId);
+  const project = await getProjectBySlug(slug);
 
   if (!project) {
     notFound();
   }
 
-  const images = project.images && project.images.length > 0
-    ? project.images
-    : [project.image];
+  const images = project.gallery && project.gallery.length > 0
+    ? project.gallery
+    : [project.coverImage];
+
+  const locationStr = [project.location.area, project.location.city].filter(Boolean).join(', ') || project.location.address;
+  const percentAvailable = project.overview.totalUnits > 0
+    ? Math.round((project.overview.availableUnits / project.overview.totalUnits) * 100)
+    : 0;
+  const isOngoing = project.status?.toLowerCase() === 'ongoing';
 
   // JSON-LD schemas
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "RealEstateListing" as const,
     name: project.title,
-    description: project.description,
+    description: project.shortDescription || project.description,
     url: `${siteUrl}/projects/${slug}`,
-    image: project.image.startsWith("http") ? project.image : `${siteUrl}${project.image}`,
+    image: project.coverImage.startsWith("http") ? project.coverImage : `${siteUrl}${project.coverImage}`,
     offers: {
       "@type": "Offer",
-      availability: project.percentAvailable > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+      availability: percentAvailable > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
       price: "Contact for pricing",
       priceCurrency: "BDT",
     },
     location: {
       "@type": "Place",
-      name: project.location,
+      name: locationStr,
       address: {
         "@type": "PostalAddress",
-        addressLocality: project.area,
+        addressLocality: project.location.area,
         addressCountry: "BD",
       },
     },
@@ -100,22 +109,17 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       {
         "@type": "PropertyValue",
         name: "Status",
-        value: project.status === "ONGOING" ? "Ongoing" : "Completed",
-      },
-      {
-        "@type": "PropertyValue",
-        name: "Property Type",
-        value: project.type,
+        value: isOngoing ? "Ongoing" : "Completed",
       },
       {
         "@type": "PropertyValue",
         name: "Available Units",
-        value: project.availableUnits,
+        value: project.overview.availableUnits,
       },
       {
         "@type": "PropertyValue",
         name: "Total Units",
-        value: project.totalUnits,
+        value: project.overview.totalUnits,
       },
     ],
   };

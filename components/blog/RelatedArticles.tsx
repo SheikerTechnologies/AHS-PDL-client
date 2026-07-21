@@ -49,7 +49,7 @@ export default function RelatedArticles({ posts }: RelatedArticlesProps) {
               <article className="flex flex-col h-full bg-surface-alt rounded-xl overflow-hidden border border-border-main shadow-sm hover:shadow-lg transition-all duration-300 dark:card-hover-glow">
                 <div className="relative aspect-[16/9] overflow-hidden">
                   <Image
-                    src={post.coverImage}
+                    src={post.thumbnail}
                     alt={post.title}
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -66,7 +66,7 @@ export default function RelatedArticles({ posts }: RelatedArticlesProps) {
                   <div className="mt-auto pt-3 flex items-center gap-2 text-[10px] text-text-muted">
                     <span className="flex items-center gap-1">
                       <CalendarDays className="w-3 h-3" />
-                      {new Date(post.date).toLocaleDateString("en-US", {
+                      {new Date(post.publishDate).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
                         year: "numeric",
