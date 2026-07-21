@@ -49,7 +49,7 @@ const nextConfig: NextConfig = {
       font-src 'self' https://fonts.gstatic.com data:;
       img-src 'self' https://images.unsplash.com https://res.cloudinary.com data: blob: ${apiUrl};
       frame-src 'self' https://maps.google.com https://www.google.com;
-      connect-src 'self' ${apiUrl};
+      connect-src 'self' ${apiUrl} ${process.env.NEXT_PUBLIC_API_URL || ''};
       object-src 'none';
       base-uri 'self';
       form-action 'self';

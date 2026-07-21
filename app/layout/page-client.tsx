@@ -1,30 +1,27 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
+import { getLayouts } from "@/lib/api/layouts";
+import type { Layout } from "@/lib/layouts";
 
 export default function JolshiriLayoutPageClient() {
-  const sectors = [
-    { sector: "01", page: 2, title: "Sector 01", desc: "Prime Residential Plots" },
-    { sector: "02", page: 3, title: "Sector 02", desc: "Lake View & Green Belt" },
-    { sector: "03", page: 4, title: "Sector 03", desc: "Modern Community Area" },
-    { sector: "04", page: 5, title: "Sector 04", desc: "Central Development Zone" },
-    { sector: "04A", page: 6, title: "Sector 04A", desc: "Sports & Recreation" },
-    { sector: "05", page: 7, title: "Sector 05", desc: "High Density Residential" },
-    { sector: "06", page: 8, title: "Sector 06", desc: "Waterfront Living" },
-    { sector: "07", page: 9, title: "Sector 07", desc: "Family Housing & Parks" },
-    { sector: "08", page: 10, title: "Sector 08", desc: "Educational & Institutional Zone" },
-    { sector: "09", page: 11, title: "Sector 09", desc: "Mixed-Use Development" },
-    { sector: "10", page: 12, title: "Sector 10", desc: "Commercial & Retail Hub" },
-    { sector: "11", page: 13, title: "Sector 11", desc: "Premium Residential Plots" },
-    { sector: "12", page: 14, title: "Sector 12", desc: "Green Residential Community" },
-    { sector: "13", page: 15, title: "Sector 13", desc: "Scenic Waterfront Plots" },
-    { sector: "13A", page: 16, title: "Sector 13A", desc: "Specialty Residential" },
-    { sector: "14", page: 17, title: "Sector 14", desc: "Tranquil Residential Area" },
-    { sector: "15", page: 18, title: "Sector 15", desc: "Modern Urban Living" },
-    { sector: "16", page: 19, title: "Sector 16", desc: "Eco-Friendly Housing" },
-    { sector: "17", page: 20, title: "Sector 17", desc: "Final Development Phase" },
-  ];
+  const [layouts, setLayouts] = useState<Layout[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    getLayouts()
+      .then((data) => {
+        setLayouts(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
 
   return (
     <div className="min-h-screen bg-surface pt-24 relative overflow-hidden">
@@ -52,60 +49,79 @@ export default function JolshiriLayoutPageClient() {
           </p>
         </div>
 
-        {/* Sector Cards - All sectors from your maps folder */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {sectors.map((item, index) => (
-            <motion.div
-              key={item.sector}
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="group bg-surface-alt rounded-3xl overflow-hidden shadow-sm border border-border-main hover:shadow-2xl transition-all duration-300 dark:card-hover-glow"
-            >
-              <div className="h-64 bg-surface-muted relative overflow-hidden">
-                <Image
-                  src={`/assets/maps/sector-${item.sector}.jpg`}
-                  alt={`Sector ${item.sector}`}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  loading="lazy"
-                  onError={(e) => {
-                    const target = e.currentTarget as HTMLImageElement;
-                    target.src = '/assets/maps/Jolshiri_Layout_Plan_by_RAJUK.jpg';
-                  }}
-                />
-                <div className="absolute top-4 left-4 bg-black/70 text-white text-xs font-bold px-3 py-1 rounded-full">
-                  SECTOR {item.sector}
-                </div>
-              </div>
-
-              <div className="p-6">
-                <h3 className="text-xl font-bold text-text-main">{item.title}</h3>
-                <p className="text-text-secondary mt-1 text-sm">{item.desc}</p>
-
-                <a
-                  href={`/assets/maps/JOLSHIRI_ABASHON_MAP.pdf#page=${item.page}`}
-                  target="_blank"
-                  className="mt-6 block w-full bg-accent hover:bg-accent-hover text-text-on-accent text-center py-3.5 rounded-2xl font-semibold transition-colors dark:btn-glow-accent"
+        {loading ? (
+          <div className="flex items-center justify-center min-h-[40vh]">
+            <div className="text-center">
+              <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto" />
+              <p className="text-text-secondary mt-4">Loading layout plans...</p>
+            </div>
+          </div>
+        ) : error ? (
+          <div className="flex items-center justify-center min-h-[40vh]">
+            <p className="text-red-500 text-lg">Failed to load layout plans. Please try again later.</p>
+          </div>
+        ) : layouts.length === 0 ? (
+          <div className="text-center py-20">
+            <p className="text-text-secondary text-lg">No layout plans available.</p>
+          </div>
+        ) : (
+          <>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {layouts.map((layout, index) => (
+                <motion.div
+                  key={layout._id}
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="group bg-surface-alt rounded-3xl overflow-hidden shadow-sm border border-border-main hover:shadow-2xl transition-all duration-300 dark:card-hover-glow"
                 >
-                  View Detailed Sector Map →
-                </a>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+                  <div className="h-64 bg-surface-muted relative overflow-hidden">
+                    <Image
+                      src={layout.image}
+                      alt={layout.title}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-500"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      loading="lazy"
+                      onError={(e) => {
+                        const target = e.currentTarget as HTMLImageElement;
+                        target.style.display = 'none';
+                      }}
+                    />
+                    <div className="absolute top-4 left-4 bg-black/70 text-white text-xs font-bold px-3 py-1 rounded-full">
+                      SECTOR {layout.title.replace('Sector ', '')}
+                    </div>
+                  </div>
 
-        {/* Full Master Plan Button */}
-        <div className="mt-16 text-center">
-          <a
-            href="/assets/maps/Jolshiri_Layout_Plan_by_RAJUK.pdf"
-            target="_blank"
-            className="inline-flex items-center gap-3 bg-accent text-text-on-accent px-10 py-4 rounded-2xl text-lg font-semibold hover:bg-accent-hover transition-all shadow-lg dark:btn-glow-accent"
-          >
-            📋 View Complete Master Layout Plan (RAJUK)
-          </a>
-        </div>
+                  <div className="p-6">
+                    <h3 className="text-xl font-bold text-text-main">{layout.title}</h3>
+                    <p className="text-text-secondary mt-1 text-sm">{layout.description}</p>
+
+                    <a
+                      href={layout.pdfUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-6 block w-full bg-accent hover:bg-accent-hover text-text-on-accent text-center py-3.5 rounded-2xl font-semibold transition-colors dark:btn-glow-accent"
+                    >
+                      View Detailed Sector Map →
+                    </a>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+
+            <div className="mt-16 text-center">
+              <a
+                href="/assets/maps/Jolshiri_Layout_Plan_by_RAJUK.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 bg-accent text-text-on-accent px-10 py-4 rounded-2xl text-lg font-semibold hover:bg-accent-hover transition-all shadow-lg dark:btn-glow-accent"
+              >
+                📋 View Complete Master Layout Plan (RAJUK)
+              </a>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );
