@@ -1,8 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { getBlogs, getBlogBySlug } from "@/lib/api/blogs";
 import type { BlogPostFrontmatter, BlogCategory, ApiBlogPost, ContentBlock } from "./blog-types";
 export type { BlogPostFrontmatter, BlogCategory } from "./blog-types";
@@ -13,6 +8,8 @@ const PLACEHOLDER_IMAGE = "/images/blog-placeholder.jpg";
 export interface BlogPost extends BlogPostFrontmatter {
   content: ContentBlock[];
 }
+
+let cachedPosts: BlogPost[] | null = null;
 
 function toBlogPost(api: ApiBlogPost): BlogPost {
   return {
@@ -35,10 +32,16 @@ function sortByDateDesc(a: BlogPost, b: BlogPost): number {
   return new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime();
 }
 
+async function loadAllPosts(): Promise<BlogPost[]> {
+  if (cachedPosts) return cachedPosts;
+  const apiPosts = await getBlogs();
+  cachedPosts = apiPosts.map(toBlogPost).sort(sortByDateDesc);
+  return cachedPosts;
+}
+
 export async function getAllPosts(): Promise<BlogPost[]> {
   try {
-    const apiPosts = await getBlogs();
-    return apiPosts.map(toBlogPost).sort(sortByDateDesc);
+    return await loadAllPosts();
   } catch {
     return [];
   }
@@ -46,6 +49,9 @@ export async function getAllPosts(): Promise<BlogPost[]> {
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
   try {
+    const all = await loadAllPosts();
+    const found = all.find((p) => p.slug === slug);
+    if (found) return found;
     const apiPost = await getBlogBySlug(slug);
     if (!apiPost) return null;
     return toBlogPost(apiPost);
@@ -56,8 +62,8 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
 
 export async function getAllSlugs(): Promise<string[]> {
   try {
-    const apiPosts = await getBlogs();
-    return apiPosts.map((p) => p.slug);
+    const all = await loadAllPosts();
+    return all.map((p) => p.slug);
   } catch {
     return [];
   }
@@ -69,8 +75,8 @@ export async function getRelatedPosts(
   limit = 3
 ): Promise<BlogPost[]> {
   try {
-    const allPosts = await getAllPosts();
-    return allPosts
+    const all = await loadAllPosts();
+    return all
       .filter(
         (p) =>
           p.category === category &&
