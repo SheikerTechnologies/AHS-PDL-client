@@ -24,8 +24,8 @@ function toBlogPost(api: ApiBlogPost): BlogPost {
     excerpt: api.excerpt || "",
     thumbnail: api.thumbnail || PLACEHOLDER_IMAGE,
     author: api.author || "",
-    authorBio: "",
-    authorAvatar: "",
+    authorBio: api.authorBio || "",
+    authorAvatar: api.authorAvatar || "",
     featured: api.featured,
     content: (api.content ?? []) as ContentBlock[],
   };
@@ -36,19 +36,31 @@ function sortByDateDesc(a: BlogPost, b: BlogPost): number {
 }
 
 export async function getAllPosts(): Promise<BlogPost[]> {
-  const apiPosts = await getBlogs();
-  return apiPosts.map(toBlogPost).sort(sortByDateDesc);
+  try {
+    const apiPosts = await getBlogs();
+    return apiPosts.map(toBlogPost).sort(sortByDateDesc);
+  } catch {
+    return [];
+  }
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const apiPost = await getBlogBySlug(slug);
-  if (!apiPost) return null;
-  return toBlogPost(apiPost);
+  try {
+    const apiPost = await getBlogBySlug(slug);
+    if (!apiPost) return null;
+    return toBlogPost(apiPost);
+  } catch {
+    return null;
+  }
 }
 
 export async function getAllSlugs(): Promise<string[]> {
-  const apiPosts = await getBlogs();
-  return apiPosts.map((p) => p.slug);
+  try {
+    const apiPosts = await getBlogs();
+    return apiPosts.map((p) => p.slug);
+  } catch {
+    return [];
+  }
 }
 
 export async function getRelatedPosts(
@@ -56,12 +68,16 @@ export async function getRelatedPosts(
   excludeSlug: string,
   limit = 3
 ): Promise<BlogPost[]> {
-  const allPosts = await getAllPosts();
-  return allPosts
-    .filter(
-      (p) =>
-        p.category === category &&
-        p.slug !== excludeSlug
-    )
-    .slice(0, limit);
+  try {
+    const allPosts = await getAllPosts();
+    return allPosts
+      .filter(
+        (p) =>
+          p.category === category &&
+          p.slug !== excludeSlug
+      )
+      .slice(0, limit);
+  } catch {
+    return [];
+  }
 }

@@ -42,6 +42,8 @@ export interface ApiBlogPost {
   slug: string;
   thumbnail: string;
   author: string;
+  authorBio?: string;
+  authorAvatar?: string;
   excerpt: string;
   category: string;
   readTime: string;

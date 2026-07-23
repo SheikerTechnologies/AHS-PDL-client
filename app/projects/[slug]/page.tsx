@@ -26,37 +26,41 @@ export async function generateMetadata({ params }: ProjectPageProps): Promise<Me
 
   if (!project) return {};
 
-  const locationStr = [project.location.area, project.location.city].filter(Boolean).join(', ') || project.location.address;
-  const percentAvailable = project.overview.totalUnits > 0
-    ? Math.round((project.overview.availableUnits / project.overview.totalUnits) * 100)
+  const locationStr = [project.location?.area, project.location?.city].filter(Boolean).join(', ') || project.location?.address || '';
+  const percentAvailable = project.overview?.totalUnits > 0
+    ? Math.round(((project.overview?.availableUnits ?? 0) / (project.overview?.totalUnits ?? 1)) * 100)
     : 0;
   const isOngoing = project.status?.toLowerCase() === 'ongoing';
 
-  const title = `${project.title} | AHS Properties & Development Ltd.`;
-  const description = `${project.title} — Apartment in ${locationStr}. ${isOngoing ? 'Currently under development.' : 'Completed project.'} ${percentAvailable}% units available.`;
+  const title = `${project.title || ''} | AHS Properties & Development Ltd.`;
+  const description = `${project.title || ''} — Apartment in ${locationStr}. ${isOngoing ? 'Currently under development.' : 'Completed project.'} ${percentAvailable}% units available.`;
+
+  const openGraphImage = project.coverImage
+    ? {
+        url: project.coverImage.startsWith("http") ? project.coverImage : `${siteUrl}${project.coverImage}`,
+        width: 1200,
+        height: 630,
+        alt: project.title || '',
+      }
+    : undefined;
 
   return {
     title,
     description,
     openGraph: {
-      title: `${project.title} — AHS Properties`,
+      title: `${project.title || ''} — AHS Properties`,
       description,
-      type: "website",
-      images: [
-        {
-          url: project.coverImage.startsWith("http") ? project.coverImage : `${siteUrl}${project.coverImage}`,
-          width: 1200,
-          height: 630,
-          alt: project.title,
-        },
-      ],
+      type: "website" as const,
+      ...(openGraphImage ? { images: [openGraphImage] } : {}),
       url: `${siteUrl}/projects/${slug}`,
     },
     twitter: {
-      card: "summary_large_image",
-      title: `${project.title} — AHS Properties`,
+      card: "summary_large_image" as const,
+      title: `${project.title || ''} — AHS Properties`,
       description,
-      images: [project.coverImage.startsWith("http") ? project.coverImage : `${siteUrl}${project.coverImage}`],
+      ...(project.coverImage
+        ? { images: [project.coverImage.startsWith("http") ? project.coverImage : `${siteUrl}${project.coverImage}`] }
+        : {}),
     },
     alternates: {
       canonical: `${siteUrl}/projects/${slug}`,
@@ -74,11 +78,11 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
 
   const images = project.gallery && project.gallery.length > 0
     ? project.gallery
-    : [project.coverImage];
+    : (project.coverImage ? [project.coverImage] : []);
 
-  const locationStr = [project.location.area, project.location.city].filter(Boolean).join(', ') || project.location.address;
-  const percentAvailable = project.overview.totalUnits > 0
-    ? Math.round((project.overview.availableUnits / project.overview.totalUnits) * 100)
+  const locationStr = [project.location?.area, project.location?.city].filter(Boolean).join(', ') || project.location?.address || '';
+  const percentAvailable = project.overview?.totalUnits > 0
+    ? Math.round(((project.overview?.availableUnits ?? 0) / (project.overview?.totalUnits ?? 1)) * 100)
     : 0;
   const isOngoing = project.status?.toLowerCase() === 'ongoing';
 
@@ -86,10 +90,12 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   const productSchema = {
     "@context": "https://schema.org",
     "@type": "RealEstateListing" as const,
-    name: project.title,
-    description: project.shortDescription || project.description,
+    name: project.title || '',
+    description: project.shortDescription || project.description || '',
     url: `${siteUrl}/projects/${slug}`,
-    image: project.coverImage.startsWith("http") ? project.coverImage : `${siteUrl}${project.coverImage}`,
+    image: project.coverImage
+      ? (project.coverImage.startsWith("http") ? project.coverImage : `${siteUrl}${project.coverImage}`)
+      : `${siteUrl}/images/project-placeholder.jpg`,
     offers: {
       "@type": "Offer",
       availability: percentAvailable > 0 ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
@@ -101,7 +107,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       name: locationStr,
       address: {
         "@type": "PostalAddress",
-        addressLocality: project.location.area,
+        addressLocality: project.location?.area || '',
         addressCountry: "BD",
       },
     },
@@ -114,12 +120,12 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       {
         "@type": "PropertyValue",
         name: "Available Units",
-        value: project.overview.availableUnits,
+        value: project.overview?.availableUnits ?? 0,
       },
       {
         "@type": "PropertyValue",
         name: "Total Units",
-        value: project.overview.totalUnits,
+        value: project.overview?.totalUnits ?? 0,
       },
     ],
   };
@@ -143,7 +149,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
       {
         "@type": "ListItem",
         position: 3,
-        name: project.title,
+        name: project.title || '',
       },
     ],
   };
