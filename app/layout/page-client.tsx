@@ -1,28 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "motion/react";
-import { getLayouts } from "@/lib/api/layouts";
 import type { Layout } from "@/lib/layouts";
 
-export default function JolshiriLayoutPageClient() {
-  const [layouts, setLayouts] = useState<Layout[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface JolshiriLayoutPageClientProps {
+  layouts: Layout[];
+}
 
-  useEffect(() => {
-    getLayouts()
-      .then((data) => {
-        setLayouts(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err.message);
-        setLoading(false);
-      });
-  }, []);
-
+export default function JolshiriLayoutPageClient({
+  layouts,
+}: JolshiriLayoutPageClientProps) {
   return (
     <div className="min-h-screen bg-surface pt-24 relative overflow-hidden">
       {/* Master Plan Background */}
@@ -49,18 +37,7 @@ export default function JolshiriLayoutPageClient() {
           </p>
         </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center min-h-[40vh]">
-            <div className="text-center">
-              <div className="w-12 h-12 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto" />
-              <p className="text-text-secondary mt-4">Loading layout plans...</p>
-            </div>
-          </div>
-        ) : error ? (
-          <div className="flex items-center justify-center min-h-[40vh]">
-            <p className="text-red-500 text-lg">Failed to load layout plans. Please try again later.</p>
-          </div>
-        ) : layouts.length === 0 ? (
+        {layouts.length === 0 ? (
           <div className="text-center py-20">
             <p className="text-text-secondary text-lg">No layout plans available.</p>
           </div>

@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getLayouts } from "@/lib/api/layouts";
+import type { Layout } from "@/lib/layouts";
 import JolshiriLayoutPageClient from "./page-client";
 
 export const metadata: Metadata = {
@@ -15,6 +17,10 @@ export const metadata: Metadata = {
   },
 };
 
-export default function JolshiriLayoutPage() {
-  return <JolshiriLayoutPageClient />;
+export default async function JolshiriLayoutPage() {
+  let layouts: Layout[] = [];
+  try {
+    layouts = await getLayouts();
+  } catch {}
+  return <JolshiriLayoutPageClient layouts={layouts} />;
 }
