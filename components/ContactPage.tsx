@@ -16,6 +16,7 @@ import {
   Navigation,
 } from 'lucide-react';
 import AHSLogo from './AHSLogo';
+import { createInquiry } from '@/lib/api/inquiries';
 
 interface ContactPageProps {
   onInquireClick: () => void;
@@ -41,51 +42,34 @@ export default function ContactPage({ onInquireClick }: ContactPageProps) {
   const [email, setEmail] = useState('');
   const [phonePrefix, setPhonePrefix] = useState('BD');
   const [phoneVal, setPhoneVal] = useState('');
-  const [propertyType, setPropertyType] = useState('Select property type');
-  const [budgetRange, setBudgetRange] = useState('');
   const [message, setMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleFormSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!firstName || !lastName || !email || !message) {
+    if (!firstName || !lastName || !email || !phoneVal || !message) {
       alert('Please fill out all required fields.');
       return;
     }
     setLoading(true);
     try {
-      const res = await fetch('/api/contact-inquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          phonePrefix,
-          phoneNumber: phoneVal,
-          propertyType,
-          budgetRange,
-          message,
-        }),
-      });
+      const prefixMap: Record<string, string> = { BD: '+880', US: '+1', UK: '+44' };
+      const phone = phoneVal.startsWith('+') ? phoneVal : `${prefixMap[phonePrefix]}${phoneVal}`;
 
-      if (!res.ok) throw new Error('Failed to submit');
+      await createInquiry({ firstName, lastName, email, phone, message });
 
       setLoading(false);
       setSubmitted(true);
-      // Reset form
       setFirstName('');
       setLastName('');
       setEmail('');
       setPhoneVal('');
-      setPropertyType('Select property type');
-      setBudgetRange('');
       setMessage('');
     } catch (err) {
       console.error('Contact form error:', err);
       setLoading(false);
-      alert('Something went wrong. Please try again or call us directly.');
+      alert(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
     }
   };
 
@@ -300,26 +284,6 @@ export default function ContactPage({ onInquireClick }: ContactPageProps) {
                         </select>
                         <input type="tel" placeholder="+880 XXXXX-XXXXXX" value={phoneVal} onChange={(e) => setPhoneVal(e.target.value)}
                           className="flex-1 px-4 py-2.5 rounded-xl border border-border-main text-xs md:text-sm focus:outline-none focus:ring-1 focus:ring-surface-muted transition-all font-medium text-text-main" />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-[10px] font-extrabold text-text-secondary uppercase tracking-wider pl-0.5">Property Type</label>
-                        <select value={propertyType} onChange={(e) => setPropertyType(e.target.value)}
-                          className="px-4 py-2.5 rounded-xl border border-border-main text-xs md:text-sm outline-none bg-transparent text-text-secondary font-medium cursor-pointer">
-                          <option disabled>Select property type</option>
-                          <option value="Luxury Villas">Luxury Villas</option>
-                          <option value="Residential Apartments">Residential Apartments</option>
-                          <option value="Commercial properties">Commercial properties</option>
-                          <option value="Premium Beachfront">Premium Beachfronts</option>
-                          <option value="Land / Plots">Land / Plots</option>
-                        </select>
-                      </div>
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-[10px] font-extrabold text-text-secondary uppercase tracking-wider pl-0.5">Budget Range</label>
-                        <input type="text" placeholder="e.g., 500,000 - 1,000,000" value={budgetRange} onChange={(e) => setBudgetRange(e.target.value)}
-                          className="px-4 py-2.5 rounded-xl border border-border-main text-xs md:text-sm focus:outline-none transition-all font-medium text-text-main" />
                       </div>
                     </div>
 
