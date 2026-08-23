@@ -27,7 +27,7 @@ const LEADERS = [
     role: 'MANAGING DIRECTOR',
     name: 'DIG (Rtd.) Md. Abu Kalam Siddique',
     suffix: '',
-    img: 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=300&h=300&q=80',
+    img: '/assets/pepole/',
     company: 'AHS Properties & Development Ltd. | Sun Solaris Limited',
     badges: ['UN Medal — Kosovo', 'Darfur Mission'],
     bio: 'Distinguished Police officer with 29 years of exemplary service in Bangladesh Police. Served as Police Commissioner Rajshahi, DIG Industrial Police, and Chief Investigator Monitor in UN Kosovo Mission and Liaison Officer in Darfur Mission, Sudan.',

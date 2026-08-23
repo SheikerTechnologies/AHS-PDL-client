@@ -2,7 +2,6 @@
 
 import { motion } from "motion/react";
 import Image from "next/image";
-import Link from "next/link";
 
 export default function ServicesPageClient() {
   const services = [
@@ -50,10 +49,7 @@ export default function ServicesPageClient() {
 
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center mb-20">
-          <div className="inline-flex items-center gap-3 bg-surface-alt px-6 py-2 rounded-full border border-border-main mb-6">
-            <span className="text-[#b84822]">✦</span>
-            <span className="uppercase tracking-[3px] font-medium text-sm">AHS Properties</span>
-          </div>
+          
           <h1 className="text-6xl md:text-7xl font-bold text-text-main tracking-tighter">
             Our Services
           </h1>
@@ -120,23 +116,24 @@ export default function ServicesPageClient() {
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative" onContextMenu={(e) => e.preventDefault()}>
               <div className="aspect-[4/3] rounded-3xl overflow-hidden border-8 border-[#8b1d1d] shadow-xl">
                 <Image
-                  src="/attachments/image.png"
+                  src="/attachments/APDL_RJSC-1.png"
                   alt="Certificate of Incorporation"
                   fill
-                  className="object-cover"
+                  className="object-cover select-none"
                   sizes="(max-width: 768px) 100vw, 50vw"
                   loading="lazy"
+                  draggable={false}
                 />
               </div>
               <div className="absolute -bottom-6 -right-6 bg-surface-alt rounded-2xl shadow-xl p-6 max-w-[220px]">
                 <p className="font-semibold text-text-main">Officially Incorporated</p>
                 <p className="text-sm text-text-secondary mt-1">Registrar of Joint Stock Companies &amp; Firms</p>
-                <Link href="/#certificate-section" className="mt-4 inline-block text-[#b84822] hover:underline font-medium">
+                <a href="/#certificate-section" className="mt-4 inline-block text-[#b84822] hover:underline font-medium">
                   View Certificate →
-                </Link>
+                </a>
               </div>
             </div>
           </div>

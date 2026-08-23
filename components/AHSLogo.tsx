@@ -71,7 +71,7 @@ export default function AHSLogo({
           src="/assets/ahspdLogoM.png"
           alt="AHS Logo"
           fill
-          className="object-contain"
+          className="object-contain "
           sizes="180px"
         />
       </div>
