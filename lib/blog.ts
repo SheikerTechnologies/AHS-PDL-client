@@ -1,8 +1,3 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import { getBlogs, getBlogBySlug } from "@/lib/api/blogs";
 import type { BlogPostFrontmatter, BlogCategory, ApiBlogPost, ContentBlock } from "./blog-types";
 export type { BlogPostFrontmatter, BlogCategory } from "./blog-types";
@@ -14,6 +9,8 @@ export interface BlogPost extends BlogPostFrontmatter {
   content: ContentBlock[];
 }
 
+let cachedPosts: BlogPost[] | null = null;
+
 function toBlogPost(api: ApiBlogPost): BlogPost {
   return {
     title: api.title,
@@ -24,8 +21,8 @@ function toBlogPost(api: ApiBlogPost): BlogPost {
     excerpt: api.excerpt || "",
     thumbnail: api.thumbnail || PLACEHOLDER_IMAGE,
     author: api.author || "",
-    authorBio: "",
-    authorAvatar: "",
+    authorBio: api.authorBio || "",
+    authorAvatar: api.authorAvatar || "",
     featured: api.featured,
     content: (api.content ?? []) as ContentBlock[],
   };
@@ -35,20 +32,41 @@ function sortByDateDesc(a: BlogPost, b: BlogPost): number {
   return new Date(b.publishDate).getTime() - new Date(a.publishDate).getTime();
 }
 
-export async function getAllPosts(): Promise<BlogPost[]> {
+async function loadAllPosts(): Promise<BlogPost[]> {
+  if (cachedPosts) return cachedPosts;
   const apiPosts = await getBlogs();
-  return apiPosts.map(toBlogPost).sort(sortByDateDesc);
+  cachedPosts = apiPosts.map(toBlogPost).sort(sortByDateDesc);
+  return cachedPosts;
+}
+
+export async function getAllPosts(): Promise<BlogPost[]> {
+  try {
+    return await loadAllPosts();
+  } catch {
+    return [];
+  }
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const apiPost = await getBlogBySlug(slug);
-  if (!apiPost) return null;
-  return toBlogPost(apiPost);
+  try {
+    const all = await loadAllPosts();
+    const found = all.find((p) => p.slug === slug);
+    if (found) return found;
+    const apiPost = await getBlogBySlug(slug);
+    if (!apiPost) return null;
+    return toBlogPost(apiPost);
+  } catch {
+    return null;
+  }
 }
 
 export async function getAllSlugs(): Promise<string[]> {
-  const apiPosts = await getBlogs();
-  return apiPosts.map((p) => p.slug);
+  try {
+    const all = await loadAllPosts();
+    return all.map((p) => p.slug);
+  } catch {
+    return [];
+  }
 }
 
 export async function getRelatedPosts(
@@ -56,12 +74,16 @@ export async function getRelatedPosts(
   excludeSlug: string,
   limit = 3
 ): Promise<BlogPost[]> {
-  const allPosts = await getAllPosts();
-  return allPosts
-    .filter(
-      (p) =>
-        p.category === category &&
-        p.slug !== excludeSlug
-    )
-    .slice(0, limit);
+  try {
+    const all = await loadAllPosts();
+    return all
+      .filter(
+        (p) =>
+          p.category === category &&
+          p.slug !== excludeSlug
+      )
+      .slice(0, limit);
+  } catch {
+    return [];
+  }
 }

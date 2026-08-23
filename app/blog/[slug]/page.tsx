@@ -5,14 +5,14 @@
 
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-
-export const revalidate = 3600;
 import {
   getPostBySlug,
   getAllSlugs,
   getRelatedPosts,
 } from "@/lib/blog";
 import ArticlePageClient from "./page-client";
+
+export const revalidate = 3600;
 
 const siteUrl = "https://ahspdl.com";
 
