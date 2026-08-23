@@ -12,7 +12,7 @@ const LEADERS = [
     role: 'CHAIRMAN',
     name: 'Lt. Gen. Sabbir Ahmed',
     suffix: '(Retd.)',
-    img: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=300&h=300&q=80',
+    img: '/assets/pepole/LtGenSabbirAhmed.jpeg',
     company: 'AHS Properties & Development Ltd. | Sun Solaris Limited',
     badges: ['SBP', 'OSP', 'SGP', 'ndc', 'psc'],
     bio: 'A distinguished Bangladesh Army officer with 35 years of illustrious service. Served as Chief of General Staff, Bangladesh Army — recognized for exemplary leadership, integrity, and international peacekeeping contributions.',

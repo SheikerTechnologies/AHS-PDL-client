@@ -32,7 +32,7 @@ export default function CEOMessageSection() {
               <div className="shrink-0">
                 <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-2 border-accent/20 shadow-md">
                   <Image
-                    src="/images/ceo-profile.jpg"
+                    src="/assets/pepole/MdSohanurRahmanSohan.jpeg"
                     alt="Md. Sohanur Rahman Sohan"
                     fill
                     className="object-cover"

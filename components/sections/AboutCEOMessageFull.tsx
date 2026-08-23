@@ -38,7 +38,7 @@ export default function AboutCEOMessageFull() {
             <div className="lg:col-span-4 flex flex-col items-center lg:items-start text-center lg:text-left">
               <div className="relative group w-64 h-64 md:w-72 md:h-72 rounded-2xl overflow-hidden shadow-md border-4 border-white mb-6 transition-transform duration-300 hover:scale-[1.02]">
                 <Image
-                  src="/images/ceo-profile.jpg"
+                  src="/assets/pepole/MdSohanurRahmanSohan.jpeg"
                   alt="Md. Sohanur Rahman Sohan"
                   fill
                   className="object-cover"
