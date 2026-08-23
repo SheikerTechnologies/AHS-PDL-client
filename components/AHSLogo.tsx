@@ -41,15 +41,20 @@ export default function AHSLogo({
   if (type === 'horizontal') {
     return (
       <div className={`flex items-center select-none ${className}`}>
-        <div style={{ height: iconSize, width: iconSize * 3 }} className="relative">
+        <div style={{ height: iconSize, width: iconSize * 2 }} className="relative">
           <Image
-            src="/assets/ahspdLogoL.png"
+            src="/assets/ahspdl1.png"
              loading="eager"
             alt="AHS Properties & Development Ltd."
             fill
             className="object-contain"
             sizes="120px"
           />
+        </div>
+        <div>
+          <h1 className="text-sm font-bold 
+          text-amber-700">AHS Properties</h1>
+          <h1 className="text-sm font-bold text-amber-700"> & Development Ltd.</h1>
         </div>
       </div>
     );
