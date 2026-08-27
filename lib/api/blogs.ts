@@ -4,7 +4,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export async function getBlogs(): Promise<ApiBlogPost[]> {
   const res = await fetch(`${API_URL}/blogs`, {
-    next: { revalidate: 3600 },
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) {
@@ -19,7 +19,7 @@ export async function getBlogs(): Promise<ApiBlogPost[]> {
 
 export async function getBlogBySlug(slug: string): Promise<ApiBlogPost | null> {
   const res = await fetch(`${API_URL}/blogs/slug/${slug}`, {
-    next: { revalidate: 3600 },
+    next: { revalidate: 60 },
   });
 
   if (!res.ok) {

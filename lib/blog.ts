@@ -9,7 +9,6 @@ export interface BlogPost extends BlogPostFrontmatter {
   content: ContentBlock[];
 }
 
-let cachedPosts: BlogPost[] | null = null;
 
 function toBlogPost(api: ApiBlogPost): BlogPost {
   return {
@@ -19,10 +18,27 @@ function toBlogPost(api: ApiBlogPost): BlogPost {
     publishDate: api.publishDate,
     readTime: api.readTime || "",
     excerpt: api.excerpt || "",
-    thumbnail: api.thumbnail || PLACEHOLDER_IMAGE,
-    author: api.author || "",
-    authorBio: api.authorBio || "",
-    authorAvatar: api.authorAvatar || "",
+
+    thumbnail:
+      typeof api.thumbnail === "string"
+        ? api.thumbnail
+        : api.thumbnail?.url || PLACEHOLDER_IMAGE,
+
+    author:
+      typeof api.author === "string"
+        ? api.author
+        : api.author?.name || "",
+
+    authorBio:
+      typeof api.author === "string"
+        ? api.authorBio || ""
+        : api.author?.designation || "",
+
+    authorAvatar:
+      typeof api.author === "string"
+        ? api.authorAvatar || ""
+        : api.author?.avatar || "",
+
     featured: api.featured,
     content: (api.content ?? []) as ContentBlock[],
   };
@@ -33,10 +49,11 @@ function sortByDateDesc(a: BlogPost, b: BlogPost): number {
 }
 
 async function loadAllPosts(): Promise<BlogPost[]> {
-  if (cachedPosts) return cachedPosts;
   const apiPosts = await getBlogs();
-  cachedPosts = apiPosts.map(toBlogPost).sort(sortByDateDesc);
-  return cachedPosts;
+
+  return apiPosts
+    .map(toBlogPost)
+    .sort(sortByDateDesc);
 }
 
 export async function getAllPosts(): Promise<BlogPost[]> {

@@ -11,7 +11,7 @@ interface ApiDesign {
 
 export async function getDesigns(): Promise<ApiDesign[]> {
   const res = await fetch(`${API_URL}/designs`, {
-    next: { revalidate: 3600 },
+    next: { revalidate: 60 },
     cache: "no-store",
   });
 
@@ -27,7 +27,7 @@ export async function getDesigns(): Promise<ApiDesign[]> {
 
 export async function getDesignById(id: string): Promise<ApiDesign | null> {
   const res = await fetch(`${API_URL}/designs/${id}`, {
-    next: { revalidate: 3600 },
+    next: { revalidate: 60 },
     cache: "no-store",
   });
 
