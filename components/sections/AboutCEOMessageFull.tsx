@@ -263,7 +263,7 @@ export default function AboutCEOMessageFull() {
                   <p className="text-[9px] text-text-secondary mt-1">Renewable Energy Solutions</p>
                 </a>
                 <a
-                  href="https://ahs.redesstech.online/"
+                  href="https://www.ahs-enterprise.com/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-surface-alt border border-border-main rounded-2xl p-4 text-center hover:shadow-md transition-shadow block"

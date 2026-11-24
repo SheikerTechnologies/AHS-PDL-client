@@ -165,7 +165,7 @@ export default function Footer() {
                 },
                 {
                   label: 'AHS Enterprise',
-                  href: 'https://ahs.redesstech.online/',
+                  href: 'https://www.ahs-enterprise.com/',
                   external: true,
                 },
               ].map((link) => (
