@@ -268,8 +268,14 @@ export default function AboutCEOMessageFull() {
                   rel="noopener noreferrer"
                   className="bg-surface-alt border border-border-main rounded-2xl p-4 text-center hover:shadow-md transition-shadow block"
                 >
-                  <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-2">
-                    <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                  <div className="w-12 h-12 flex items-center justify-center mx-auto mb-2 relative">
+                    <Image
+                      src="/assets/ahspdl1.png"
+                      alt="AHS Properties & Development Ltd."
+                      width={48}
+                      height={48}
+                      className="object-contain"
+                    />
                   </div>
                   <h4 className="text-xs font-bold text-text-main">M/S. AHS Enterprise</h4>
                   <p className="text-[9px] text-text-secondary mt-1">Supply &amp; Contracting</p>
